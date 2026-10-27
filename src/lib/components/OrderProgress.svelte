@@ -1,69 +1,25 @@
 <script lang="ts">
+	import Icon from './Icon.svelte';
 	import { t, type Key } from '#lib/i18n/index.js';
 
 	let { status }: { status: string } = $props();
 
 	const steps = ['paid', 'processing', 'shipped', 'delivered'] as const;
 	const reached = $derived(steps.indexOf(status as (typeof steps)[number]));
+	const finished = $derived(status === 'delivered');
 </script>
 
 {#if reached >= 0}
-	<ol class="progress" aria-label="Order progress">
+	<ol class="steps" aria-label={t('order.progress')}>
 		{#each steps as step, i (step)}
-			<li class:done={i <= reached} aria-current={i === reached ? 'step' : undefined}>
-				<span class="dot" aria-hidden="true"></span>
-				<span class="label">{t(`status.${step}` as Key)}</span>
+			{@const done = i < reached || finished}
+			{@const now = i === reached && !finished}
+			<li class="step" class:done class:now aria-current={now ? 'step' : undefined}>
+				<span class="dot"
+					>{#if done}<Icon name="check" size={14} stroke={3} />{/if}</span
+				>
+				{t(`status.${step}` as Key)}
 			</li>
 		{/each}
 	</ol>
 {/if}
-
-<style>
-	.progress {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-	}
-	li {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 6px;
-		position: relative;
-		font-size: 0.8rem;
-		color: var(--muted);
-		text-align: center;
-	}
-	li::before {
-		content: '';
-		position: absolute;
-		top: 7px;
-		right: 50%;
-		width: 100%;
-		height: 2px;
-		background: var(--border);
-	}
-	li:first-child::before {
-		display: none;
-	}
-	li.done::before {
-		background: var(--accent);
-	}
-	.dot {
-		width: 16px;
-		height: 16px;
-		border-radius: 50%;
-		background: var(--surface);
-		border: 2px solid var(--border);
-		position: relative;
-	}
-	li.done .dot {
-		background: var(--accent);
-		border-color: var(--accent);
-	}
-	li.done {
-		color: var(--text);
-	}
-</style>

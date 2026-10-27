@@ -35,7 +35,7 @@ cp .env.example .env     # API_URL defaults to http://localhost:8080/api/v1
 npm run dev              # http://localhost:3000
 ```
 
-Port 3000 matches the API's development `CHAPA_RETURN_URL`, so with `CHAPA_MODE=mock` checkout returns straight to the payment page. Use code `123456` for SMS verification (`OTP_DEV_CODE`).
+With `CHAPA_MODE=mock`, "Continue to payment" opens the API's mock Chapa checkout. There you pay with Telebirr, CBE Birr or a test card, or decline or cancel. It then returns to `/payment/complete`; port 3000 matches the API's development `CHAPA_RETURN_URL`. Payouts settle on the mock a few seconds after an admin approves them, and an account number ending in `0000` fails. The mock's dashboard is at http://localhost:8080/mock-chapa/. Use code `123456` for SMS verification (`OTP_DEV_CODE`).
 
 Start the API with `TRUSTED_PROXY_COUNT=1`. Every request reaches the API through this server, which forwards the buyer's address in `X-Forwarded-For`; without it, all users share one rate-limit bucket.
 
@@ -51,7 +51,7 @@ npm run gen:api      # regenerate src/lib/api/schema.ts from ../Backend/docs/swa
 npm run build        # production build (adapter-node) into build/
 ```
 
-`npm run test:e2e` builds the app and drives a seller and a buyer through sign-up, onboarding, listing, payment, shipping, delivery, settlement and a payout request. It needs the API and its Postgres container (it promotes an admin user to approve KYC). Set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome, or run `npx playwright install chromium` once. `SCREENSHOT_DIR=…` saves a screenshot of each step. Locally every request comes from one address, so start the API with `RATE_LIMIT_REQUESTS=1000` for test runs; its auth limit (10 a minute per address) still allows about one run a minute.
+`npm run test:e2e` builds the app and drives a seller and a buyer through sign-up, onboarding, listing, a Telebirr payment on the mock checkout, shipping, delivery, settlement, a declined payment, and two payouts: one sent, one that fails at the provider. It needs the API and its Postgres container (it promotes an admin user to approve KYC). Set `PLAYWRIGHT_CHANNEL=chrome` to use an installed Chrome, or run `npx playwright install chromium` once. `SCREENSHOT_DIR=…` saves a screenshot of each step. Locally every request comes from one address, so start the API with `RATE_LIMIT_REQUESTS=1000` for test runs. The API's `.env.example` also sets `AUTH_RATE_LIMIT_REQUESTS=60` and `PAYOUT_RECHECK_INTERVAL=10s`, which the payout steps rely on.
 
 ## Deploy
 
@@ -71,10 +71,12 @@ src/hooks.server.ts        language, API client and current user for every reque
 src/lib/server/            API client, cookies, error mapping, form parsing (server-only)
 src/lib/api/               generated schema and DTO type aliases
 src/lib/i18n/              en.ts (source) and am.ts (type-checked to have every key)
-src/lib/components/        Field, Alert, StatusBadge, OrderSummary, CopyLink, …
+src/lib/components/        Header, Footer, SellerNav, Field, Submit, Alert, OrderItems, Icon, …
+src/app.css                the design system (from docs/design/claude-design/gebeya.css)
 src/routes/                buyer pages, auth pages, seller/(app)/… behind a shop guard
 e2e/money-flow.e2e.ts      the end-to-end test
 docs/design/BRIEF.md       design brief: every screen, field, action and state (for Claude Design)
+docs/design/claude-design/ the approved design exported from Claude Design (gebeya.css + one file per screen)
 ```
 
 ## License

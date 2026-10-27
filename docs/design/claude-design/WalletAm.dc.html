@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="am">
+<head>
+<meta charset="utf-8">
+<title>ቦርሳ</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="am">
+  <div class="slot"><dc-import name="Header" user="seller" cart="0" active="shop" lang="am" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap shell">
+      <div class="slot"><dc-import name="SellerNav" active="wallet" lang="am" theme="{{theme}}" hint-size="100%,128px"></dc-import></div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0">
+        <h1 class="t1">ቦርሳ</h1>
+
+        <div class="stats three">
+          <div class="stat hi span-sm"><span class="stat-l">ለማውጣት ዝግጁ</span><span class="stat-v">1,525.00<small>ብር</small></span><span class="stat-s">ቀሪ ሂሳብ ሲቀነስ የተያዘ</span></div>
+          <div class="stat"><span class="stat-l">ለክፍያ የተያዘ</span><span class="stat-v">1,000.00<small>ብር</small></span><span class="stat-s">ግምገማ በመጠበቅ ላይ</span></div>
+          <div class="stat"><span class="stat-l">የቦርሳ ቀሪ ሂሳብ</span><span class="stat-v">2,525.00<small>ብር</small></span></div>
+        </div>
+
+        <div class="split half" style="gap: 16px">
+          <section class="card" aria-labelledby="am-po-h">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 class="card-t" id="am-po-h">ገንዘብ ማውጣት</h2>
+              <p class="foot muted">ገበያ እያንዳንዱን ጥያቄ ከመላኩ በፊት ይገመግማል።</p>
+            </div>
+            <form class="form" method="post" action="#payout" style="gap: 18px">
+              <div class="field">
+                <label class="label" for="am-w-amt">መጠን</label>
+                <div class="affix"><input class="input num" id="am-w-amt" name="amount" type="text" inputmode="decimal" value="1,525.00" aria-describedby="am-w-amt-h"><span class="affix-end">ብር</span></div>
+                <p class="hint num" id="am-w-amt-h">ቢያንስ 1.00 ብር · እስከ 1,525.00 ብር</p>
+              </div>
+              <fieldset class="field">
+                <legend class="label" style="margin-bottom: 8px">የሚላክበት</legend>
+                <div class="rcards" style="gap: 8px">
+                  <label class="rcard" style="align-items: center"><input type="radio" name="method" value="telebirr" checked="checked"><span class="rcard-b"><span class="callout strong">ቴሌብር</span></span></label>
+                  <label class="rcard" style="align-items: center"><input type="radio" name="method" value="cbe_birr"><span class="rcard-b"><span class="callout strong">ሲቢኢ ብር</span></span></label>
+                  <label class="rcard" style="align-items: center"><input type="radio" name="method" value="bank"><span class="rcard-b"><span class="callout strong">የባንክ ዝውውር</span></span></label>
+                </div>
+              </fieldset>
+              <div class="field">
+                <label class="label" for="am-w-bank">ባንክ ወይም ዋሌት</label>
+                <span class="select"><select class="input" id="am-w-bank" name="bank"><option selected="selected">ቴሌብር</option><option>ሲቢኢ ብር</option><option>የኢትዮጵያ ንግድ ባንክ</option><option>አዋሽ ባንክ</option><option>ዳሽን ባንክ</option><option>አቢሲንያ ባንክ</option></select><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+              </div>
+              <div class="field">
+                <label class="label" for="am-w-dest">የሂሳብ ወይም የስልክ ቁጥር</label>
+                <input class="input num" id="am-w-dest" name="account" type="text" inputmode="numeric" value="0912 345 678">
+              </div>
+              <div class="field">
+                <label class="label" for="am-w-holder">የሂሳቡ ባለቤት ስም</label>
+                <input class="input" id="am-w-holder" name="holder" type="text" value="ትግስት በቀለ">
+              </div>
+              <button class="btn btn-primary btn-block" type="submit">ገንዘብ ለማውጣት ጠይቅ</button>
+            </form>
+          </section>
+
+          <section class="card" aria-labelledby="am-pl-h" style="gap: 8px">
+            <div class="card-h" style="padding-bottom: 8px"><h2 class="card-t" id="am-pl-h">የወጡ ክፍያዎች</h2><span class="foot muted">የመጨረሻዎቹ 10</span></div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line)">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px"><span class="lrow-t num">1,000.00 ብር</span><span class="badge b-warning">ግምገማ በመጠበቅ ላይ</span></div>
+              <span class="lrow-s num">ቴሌብር · 0912 345 678</span>
+              <span class="lrow-s num">የተጠየቀው 22 Oct 2026, 09:30</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line)">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px"><span class="lrow-t num">1,290.00 ብር</span><span class="badge b-success">ተልኳል</span></div>
+              <span class="lrow-s num">ቴሌብር · 0912 345 678</span>
+              <span class="lrow-s num">የተጠየቀው 19 Oct 2026, 16:40</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line)">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px"><span class="lrow-t num">600.00 ብር</span><span class="badge b-danger">አልተሳካም</span></div>
+              <span class="lrow-s num">ሲቢኢ ብር · 0912 345 678</span>
+              <span class="lrow-s num">የተጠየቀው 12 Oct 2026, 11:15</span>
+              <span class="foot" style="color: var(--danger-fg); padding-top: 2px">የሂሳቡ ስም አልተዛመደም። ገንዘቡ ወደ ቦርሳዎ ተመልሷል።</span>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line)">
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px"><span class="lrow-t num">2,100.00 ብር</span><span class="badge b-success">ተልኳል</span></div>
+              <span class="lrow-s num">የኢትዮጵያ ንግድ ባንክ · 1000 2345 6789</span>
+              <span class="lrow-s num">የተጠየቀው 5 Oct 2026, 14:02</span>
+            </div>
+          </section>
+        </div>
+
+        <section style="display: flex; flex-direction: column; gap: 14px" aria-labelledby="am-tx-h">
+          <h2 class="t3" id="am-tx-h">ግብይቶች</h2>
+          <div class="list">
+            <sc-for list="{{tx}}" as="t" hint-placeholder-count="6">
+              <div class="lrow">
+                <span class="thumb-s" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg)"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.icon}}"></path></svg></span>
+                <div class="lrow-main">
+                  <span class="lrow-t">{{t.type}}</span>
+                  <span class="lrow-s num"><sc-if value="{{t.order}}" hint-placeholder-val="{{true}}"><a href="SellerOrderAm.dc.html">ትዕዛዝ #{{t.order}}</a> · </sc-if>{{t.meta}}</span>
+                </div>
+                <span class="lrow-amt">{{t.amount}}</span>
+              </div>
+            </sc-for>
+          </div>
+          <nav class="pager" aria-label="ገጾች">
+            <span class="btn btn-secondary btn-sm" aria-disabled="true"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>ቀዳሚ</span>
+            <span class="pager-l">ገጽ 1 ከ 4</span>
+            <a class="btn btn-secondary btn-sm" href="#page-2">ቀጣይ<svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+          </nav>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" lang="am" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":360,"height":3000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const IN = 'M12 19V5M6 13l6 6 6-6';
+    const OUT = 'M12 5v14M6 11l6-6 6 6';
+    return {
+      theme: this.props.theme ?? 'light',
+      tx: [
+        { type: 'ገንዘብ ማውጣት', order: '', meta: 'ቴሌብር · 19 Oct 2026, 16:40', amount: '−1,290.00 ብር', icon: OUT },
+        { type: 'ሽያጭ', order: '7f21a9b3', meta: '18 Oct 2026, 18:02', amount: '+2,525.00 ብር', icon: IN },
+        { type: 'ሽያጭ', order: '2c8e5f41', meta: '17 Oct 2026, 12:20', amount: '+1,290.00 ብር', icon: IN },
+        { type: 'ቻርጅባክ', order: '9e0a4b77', meta: '14 Oct 2026, 09:48', amount: '−1,330.00 ብር', icon: OUT },
+        { type: 'ተመላሽ', order: '4d1a6c25', meta: '12 Oct 2026, 10:05', amount: '−957.50 ብር', icon: OUT },
+        { type: 'ሽያጭ', order: '4d1a6c25', meta: '10 Oct 2026, 15:47', amount: '+957.50 ብር', icon: IN }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Open your shop</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="buyer" cart="0" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap">
+      <div class="narrow" style="max-width: 560px; display: flex; flex-direction: column; gap: 28px">
+        <div style="display: flex; flex-direction: column; gap: 8px">
+          <p class="eyebrow">Sell on Gebeya</p>
+          <h1 class="t1">Open your shop</h1>
+          <p class="body muted pretty">Buyers see your shop name and delivery fee before they pay. You can change these later in Settings.</p>
+        </div>
+
+        <sc-if value="{{unverified}}" hint-placeholder-val="{{false}}">
+          <div class="alert alert-warning" role="status">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"></path><path d="M12 10v4M12 16.8v.2"></path></svg>
+            <div class="alert-b">
+              <strong>Verify your phone first</strong>
+              <span>Shops need a verified phone so buyers and Gebeya can reach you.</span>
+              <a class="btn btn-primary btn-sm" href="VerifyPhone.dc.html" style="align-self: flex-start; margin-top: 8px; color: var(--on-primary); text-decoration: none">Verify now</a>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}">
+          <div class="alert alert-error" role="alert">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+            <div class="alert-b"><strong>Check the highlighted field</strong></div>
+          </div>
+        </sc-if>
+
+        <form class="form" method="post" action="#open">
+          <fieldset class="form" disabled="{{unverified}}">
+            <div class="field">
+              <label class="label" for="s-name">Shop name</label>
+              <input class="input" id="s-name" name="name" type="text" value="Tibeb Shop" required="required">
+            </div>
+            <div class="{{slugCls}}">
+              <label class="label" for="s-slug">Shop link <span class="opt">(optional)</span></label>
+              <div class="group"><span class="group-pre">gebeya.et/s/</span><input class="input" id="s-slug" name="slug" type="text" value="tibeb-shop" aria-describedby="s-slug-h" aria-invalid="{{slugTaken}}"></div>
+              <sc-if value="{{slugTaken}}" hint-placeholder-val="{{false}}">
+                <p class="err" id="s-slug-h"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.5"></path></svg>That link is taken. Try tibeb-shop-addis.</p>
+              </sc-if>
+              <sc-if value="{{slugOk}}" hint-placeholder-val="{{true}}">
+                <p class="hint" id="s-slug-h">Lowercase letters, numbers and dashes. Leave empty and we’ll make one from your shop name.</p>
+              </sc-if>
+            </div>
+            <div class="field">
+              <label class="label" for="s-about">About your shop <span class="opt">(optional)</span></label>
+              <textarea class="input" id="s-about" name="description" maxlength="500" placeholder="What you sell and where you deliver"></textarea>
+            </div>
+            <div class="field">
+              <label class="label" for="s-phone">Shop phone</label>
+              <input class="input num" id="s-phone" name="phone" type="tel" inputmode="tel" value="0912 345 678" aria-describedby="s-phone-h" required="required">
+              <p class="hint" id="s-phone-h">Buyers and Gebeya call this number about orders.</p>
+            </div>
+            <div class="field">
+              <label class="label" for="s-city">City</label>
+              <span class="select"><select class="input" id="s-city" name="city"><option>Addis Ababa</option></select><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+            </div>
+
+            <div class="card" style="gap: 20px">
+              <div style="display: flex; flex-direction: column; gap: 4px">
+                <h2 class="card-t">Delivery</h2>
+                <p class="foot muted">Delivery fees go to you in full.</p>
+              </div>
+              <div class="{{feeCls}}">
+                <label class="label" for="s-fee">Delivery fee</label>
+                <div class="affix"><input class="input num" id="s-fee" name="delivery_fee" type="text" inputmode="decimal" value="{{fee}}" aria-invalid="{{badAmount}}" aria-describedby="s-fee-e"><span class="affix-end">ETB</span></div>
+                <sc-if value="{{badAmount}}" hint-placeholder-val="{{false}}">
+                  <p class="err" id="s-fee-e"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.5"></path></svg>Enter an amount like 150 or 150.00.</p>
+                </sc-if>
+              </div>
+              <div class="field">
+                <label class="label" for="s-free">Free delivery over <span class="opt">(optional)</span></label>
+                <div class="affix"><input class="input num" id="s-free" name="free_over" type="text" inputmode="decimal" value="3,000.00" aria-describedby="s-free-h"><span class="affix-end">ETB</span></div>
+                <p class="hint" id="s-free-h">Leave empty to always charge delivery.</p>
+              </div>
+            </div>
+
+            <div class="field">
+              <label class="label" for="s-tin">Tax number (TIN) <span class="opt">(optional)</span></label>
+              <input class="input num" id="s-tin" name="tin" type="text" inputmode="numeric" maxlength="10" pattern="[0-9]{10}" aria-describedby="s-tin-h">
+              <p class="hint" id="s-tin-h">10 digits.</p>
+            </div>
+
+            <button class="btn btn-primary btn-block" type="submit">Open shop</button>
+            <p class="foot muted" style="text-align: center">Gebeya keeps 5% of each sale’s item total. You get paid when the buyer confirms delivery.</p>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"phoneVerified":{"editor":"boolean","default":true},"error":{"editor":"enum","options":["none","link taken","invalid amount"],"default":"none"},"$preview":{"width":360,"height":2000}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const v = this.props.phoneVerified;
+    const e = this.props.error ?? 'none';
+    const slugTaken = e === 'link taken';
+    const badAmount = e === 'invalid amount';
+    return {
+      theme: this.props.theme ?? 'light',
+      unverified: !(v === undefined || v === true || v === 'true'),
+      hasError: slugTaken || badAmount,
+      slugTaken: slugTaken,
+      slugOk: !slugTaken,
+      slugCls: 'field' + (slugTaken ? ' is-invalid' : ''),
+      badAmount: badAmount,
+      fee: badAmount ? '150 birr' : '150.00',
+      feeCls: 'field' + (badAmount ? ' is-invalid' : '')
+    };
+  }
+}
+</script>
+</body>
+</html>

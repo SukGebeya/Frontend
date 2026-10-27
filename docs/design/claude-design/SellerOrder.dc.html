@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Seller order #3eb05c7c</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="seller" cart="0" active="shop" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap shell">
+      <div class="slot"><dc-import name="SellerNav" active="orders" theme="{{theme}}" hint-size="100%,124px"></dc-import></div>
+
+      <div style="display: flex; flex-direction: column; gap: 20px; min-width: 0">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <a class="btn btn-link btn-sm" href="SellerOrders.dc.html" style="align-self: flex-start; padding: 0; color: var(--ink-2)"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Orders</a>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap">
+            <h1 class="t1 num">Order #3eb05c7c</h1>
+            <span class="{{badgeCls}}">{{badge}}</span>
+          </div>
+          <p class="sub muted num">Placed 22 Oct 2026, 13:37 · paid 13:41</p>
+        </div>
+
+        <div class="split half" style="gap: 16px">
+          <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+            <section class="card" aria-label="Next step" style="gap: 20px">
+              <sc-if value="{{showSteps}}" hint-placeholder-val="{{true}}">
+                <ol class="steps" aria-label="Order progress">
+                  <sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+                    <li class="{{s.cls}}" aria-current="{{s.current}}">
+                      <span class="dot"><sc-if value="{{s.done}}" hint-placeholder-val="{{false}}"><svg class="i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 3"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></sc-if></span>
+                      {{s.label}}
+                    </li>
+                  </sc-for>
+                </ol>
+              </sc-if>
+
+              <sc-if value="{{isPaid}}" hint-placeholder-val="{{true}}">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <h2 class="t3">New paid order</h2>
+                  <p class="callout muted pretty">Accept it to start preparing. The buyer’s money is held until they confirm delivery.</p>
+                </div>
+                <form method="post" action="#accept" style="display: flex"><button class="btn btn-primary btn-fluid" type="submit">Accept and prepare</button></form>
+              </sc-if>
+
+              <sc-if value="{{isProcessing}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <h2 class="t3">Ship this order</h2>
+                  <p class="callout muted pretty">Add how it’s travelling so the buyer can follow it.</p>
+                </div>
+                <form class="form" method="post" action="#ship" style="gap: 16px">
+                  <div class="field">
+                    <label class="label" for="sh-car">Carrier</label>
+                    <input class="input" id="sh-car" name="carrier" type="text" list="carriers" value="Self delivery" aria-describedby="sh-car-h" required="required">
+                    <p class="hint" id="sh-car-h">Ethio Post, Deliver Addis, Zmall or Self delivery — or type another.</p>
+                    <datalist id="carriers"><option value="Ethio Post"></option><option value="Deliver Addis"></option><option value="Zmall"></option><option value="Self delivery"></option></datalist>
+                  </div>
+                  <div class="field"><label class="label" for="sh-trk">Tracking number <span class="opt">(optional)</span></label><input class="input num" id="sh-trk" name="tracking" type="text" placeholder="TB-2210-07"></div>
+                  <div class="field"><label class="label" for="sh-eta">Estimated delivery <span class="opt">(optional)</span></label><input class="input" id="sh-eta" name="eta" type="date" min="2026-10-22" value="2026-10-24" aria-describedby="sh-eta-h"><p class="hint" id="sh-eta-h">Today or later.</p></div>
+                  <button class="btn btn-primary btn-fluid" type="submit">Mark as shipped</button>
+                </form>
+              </sc-if>
+
+              <sc-if value="{{isShipped}}" hint-placeholder-val="{{false}}">
+                <div style="display: flex; flex-direction: column; gap: 6px">
+                  <h2 class="t3">Shipped</h2>
+                  <p class="callout muted pretty">You get paid when the buyer confirms delivery, or automatically on <span class="num" style="color: var(--ink); font-weight: 600">30 Oct 2026</span>.</p>
+                </div>
+                <dl style="display: flex; flex-direction: column; gap: 12px">
+                  <div class="kv"><dt>Carrier</dt><dd>Self delivery</dd></div>
+                  <div class="kv"><dt>Tracking number</dt><dd class="num">TB-2210-07</dd></div>
+                  <div class="kv"><dt>Estimated delivery</dt><dd class="num">24 Oct 2026</dd></div>
+                </dl>
+              </sc-if>
+
+              <sc-if value="{{isDelivered}}" hint-placeholder-val="{{false}}">
+                <div class="alert alert-success">
+                  <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.2 2.3 2.3 4.7-4.8"></path></svg>
+                  <div class="alert-b"><strong>Delivered</strong><span>2,525.00 ETB was added to your <a href="SellerWallet.dc.html">wallet</a>.</span></div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{isDisputed}}" hint-placeholder-val="{{false}}">
+                <div class="alert alert-warning">
+                  <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"></path><path d="M12 10v4M12 16.8v.2"></path></svg>
+                  <div class="alert-b"><strong>A dispute is open</strong><span>The buyer wrote: “The kemis is size S, not M.” The money stays held while Gebeya reviews it. Gebeya will contact you.</span></div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{isClosed}}" hint-placeholder-val="{{false}}">
+                <div class="alert alert-neutral">
+                  <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg>
+                  <div class="alert-b"><strong>{{closedTitle}}</strong><span>The buyer’s 2,650.00 ETB was returned. Nothing was added to your wallet.</span></div>
+                </div>
+              </sc-if>
+            </section>
+
+            <sc-if value="{{canCancel}}" hint-placeholder-val="{{true}}">
+              <details class="disclose danger">
+                <summary><span>Cancel and refund buyer</span><svg class="i chev-d" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></summary>
+                <form class="disclose-b" method="post" action="#cancel">
+                  <p class="sub muted pretty">The buyer gets a full refund of 2,650.00 ETB and the order closes. This can’t be undone.</p>
+                  <button class="btn btn-danger btn-block" type="submit">Cancel and refund buyer</button>
+                </form>
+              </details>
+            </sc-if>
+
+            <section class="card" aria-labelledby="it-h">
+              <h2 class="card-t" id="it-h">Items</h2>
+              <div style="display: flex; gap: 12px; align-items: center">
+                <span class="thumb-s"><svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><circle cx="9" cy="10" r="1.75"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+                <div class="lrow-main"><span class="callout strong">Habesha Kemis</span><span class="foot muted">Size M × 1</span></div>
+                <span class="callout num">2,500.00 ETB</span>
+              </div>
+            </section>
+          </div>
+
+          <div style="display: flex; flex-direction: column; gap: 16px; min-width: 0">
+            <section class="card" aria-labelledby="earn-h">
+              <h2 class="card-t" id="earn-h">Your earnings</h2>
+              <div class="mrows">
+                <div class="mrow"><span>Items</span><span>2,500.00 ETB</span></div>
+                <div class="mrow"><span>Gebeya fee (5%)</span><span>−125.00 ETB</span></div>
+                <div class="mrow"><span>Delivery</span><span>150.00 ETB</span></div>
+                <div class="mrow total big"><span>You receive</span><span>2,525.00 ETB</span></div>
+              </div>
+              <p class="foot muted">Added to your wallet when the buyer confirms delivery.</p>
+            </section>
+
+            <section class="card" aria-labelledby="to-h">
+              <h2 class="card-t" id="to-h">Deliver to</h2>
+              <sc-if value="{{hasAddress}}" hint-placeholder-val="{{true}}">
+                <dl style="display: flex; flex-direction: column; gap: 12px">
+                  <div class="kv"><dt>Name</dt><dd>Abebe Bikila</dd></div>
+                  <div class="kv"><dt>Address</dt><dd>Bole, near Edna Mall, house 12<br>Woreda 03, Bole, Addis Ababa</dd></div>
+                  <div class="kv"><dt>Buyer’s note</dt><dd>Please call before delivery.</dd></div>
+                </dl>
+                <a class="btn btn-secondary btn-block" href="tel:+251911234567"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h3l1.5 4-2 1.5a11 11 0 0 0 6 6l1.5-2 4 1.5v3a2 2 0 0 1-2 2A16 16 0 0 1 4.5 5.5a2 2 0 0 1 2-2Z"></path></svg>Call 0911 234 567</a>
+              </sc-if>
+              <sc-if value="{{addressRemoved}}" hint-placeholder-val="{{false}}">
+                <p class="callout muted">The delivery address was removed.</p>
+              </sc-if>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"status":{"editor":"enum","options":["paid","processing","shipped","delivered","disputed","cancelled","refunded"],"default":"paid"},"addressRemoved":{"editor":"boolean","default":false},"$preview":{"width":360,"height":2300}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const st = this.props.status ?? 'paid';
+    const labels = { paid: 'Paid', processing: 'Preparing', shipped: 'Shipped', delivered: 'Delivered', disputed: 'In dispute', cancelled: 'Cancelled', refunded: 'Refunded' };
+    const tones = { paid: ' b-info', processing: ' b-info', shipped: ' b-info', delivered: ' b-success', disputed: ' b-warning', cancelled: '', refunded: '' };
+    const order = ['paid', 'processing', 'shipped', 'delivered'];
+    const at = order.indexOf(st);
+    const steps = ['Paid', 'Preparing', 'Shipped', 'Delivered'].map((label, i) => {
+      const done = at >= 0 && (i < at || (st === 'delivered' && i === at));
+      const now = at >= 0 && i === at && st !== 'delivered';
+      return { label: label, done: done, cls: 'step' + (done ? ' done' : '') + (now ? ' now' : ''), current: now ? 'step' : undefined };
+    });
+    return {
+      theme: this.props.theme ?? 'light',
+      badge: labels[st] || st,
+      badgeCls: 'badge' + (tones[st] || ''),
+      showSteps: at >= 0,
+      steps: steps,
+      isPaid: st === 'paid',
+      isProcessing: st === 'processing',
+      isShipped: st === 'shipped',
+      isDelivered: st === 'delivered',
+      isDisputed: st === 'disputed',
+      isClosed: st === 'cancelled' || st === 'refunded',
+      closedTitle: st === 'refunded' ? 'Refunded' : 'Cancelled',
+      canCancel: st === 'paid' || st === 'processing',
+      addressRemoved: this.props.addressRemoved === true || this.props.addressRemoved === 'true',
+      hasAddress: !(this.props.addressRemoved === true || this.props.addressRemoved === 'true')
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -2,13 +2,16 @@
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
 	import Alert from '#lib/components/Alert.svelte';
+	import EmptyState from '#lib/components/EmptyState.svelte';
 	import Field from '#lib/components/Field.svelte';
 	import FormMessage from '#lib/components/FormMessage.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Pagination from '#lib/components/Pagination.svelte';
 	import StatusBadge from '#lib/components/StatusBadge.svelte';
+	import Submit from '#lib/components/Submit.svelte';
 	import { formState, submitting } from '#lib/forms.svelte.js';
 	import { formatDate, lang, t, tv } from '#lib/i18n/index.js';
-	import { formatMoney } from '#lib/money.js';
+	import { currency, formatAmount, formatMoney } from '#lib/money.js';
 	import type { PageProps } from './$types';
 
 	let { data, form }: PageProps = $props();
@@ -18,7 +21,8 @@
 	const amount = (cents: number) => formatMoney(cents, lang());
 
 	const canWithdraw = $derived(data.profile.is_verified && data.kycStatus === 'verified');
-	let method = $state('telebirr');
+	const methods = ['telebirr', 'cbe_birr', 'bank_transfer'] as const;
+	let method = $state<string>('telebirr');
 	let bankCode = $state('');
 	// Preselect the matching wallet when switching to Telebirr or CBE Birr.
 	const suggested = $derived.by(() => {
@@ -29,40 +33,62 @@
 	});
 	const bank = $derived(bankCode || suggested);
 	const debit = (type: string) => type.endsWith('_debit');
+	const transactions = $derived(data.transactions.items ?? []);
 </script>
 
-<svelte:head><title>{t('wallet.title')} · Gebeya</title></svelte:head>
+<svelte:head><title>{t('wallet.title')} · {t('brand.name')}</title></svelte:head>
 
-<h1>{t('wallet.title')}</h1>
+{#snippet money(cents: number)}{formatAmount(cents)}<small> {currency(lang())}</small>{/snippet}
 
-<section class="stats">
-	<div class="card stat">
-		<span class="muted small">{t('seller.available')}</span>
-		<span class="big amount">{amount(data.wallet.available_cents)}</span>
-	</div>
-	<div class="card stat">
-		<span class="muted small">{t('seller.held')}</span>
-		<span class="big amount">{amount(data.wallet.pending_payout_cents)}</span>
-	</div>
-</section>
-
+<h1 class="t1">{t('wallet.title')}</h1>
 <FormMessage form={f} />
 
-<section class="card stack" aria-labelledby="withdraw">
-	<h2 id="withdraw">{t('wallet.request')}</h2>
-	{#if !canWithdraw}
-		<Alert tone="info">{t('wallet.kycNote')}</Alert>
-	{:else}
-		<form method="POST" action="?/payout" class="stack" use:enhance={s.submit}>
-			<input type="hidden" name="idempotency_key" value={data.idempotencyKey} />
-			<div class="grid-2">
+<div class="stats three">
+	<div class="stat hi span-sm">
+		<span class="stat-l">{t('seller.available')}</span>
+		<span class="stat-v">{@render money(data.wallet.available_cents)}</span>
+		<span class="stat-s">{t('wallet.availableNote')}</span>
+	</div>
+	<div class="stat">
+		<span class="stat-l">{t('seller.held')}</span>
+		<span class="stat-v">{@render money(data.wallet.pending_payout_cents)}</span>
+		<span class="stat-s">{t('wallet.heldNote')}</span>
+	</div>
+	<div class="stat">
+		<span class="stat-l">{t('seller.balance')}</span>
+		<span class="stat-v">{@render money(data.wallet.balance_cents)}</span>
+	</div>
+</div>
+
+<div class="split half">
+	<section class="card" aria-labelledby="po-h">
+		<div class="vstack gap-4">
+			<h2 class="card-t" id="po-h">{t('wallet.submit')}</h2>
+			<p class="foot muted">{t('wallet.reviewNote')}</p>
+		</div>
+
+		{#if !canWithdraw}
+			<Alert tone="info" title={t('wallet.lockedTitle')}>
+				<span
+					>{t('wallet.lockedLead')}
+					<a href={resolve('/seller/(app)')}>{t('wallet.seeStatus')}</a></span
+				>
+			</Alert>
+		{:else}
+			<form method="POST" action="?/payout" class="form payout" use:enhance={s.submit}>
+				<input type="hidden" name="idempotency_key" value={data.idempotencyKey} />
 				<Field
 					id="amount"
 					label={t('wallet.amount')}
-					hint={t('wallet.minimum')}
+					suffix={currency(lang())}
+					hint={t('wallet.amountHint', {
+						min: amount(100),
+						max: amount(data.wallet.available_cents)
+					})}
 					error={f.fields?.amount ?? f.fields?.amount_cents}
 				>
 					<input
+						class="input num"
 						id="amount"
 						name="amount"
 						inputmode="decimal"
@@ -70,31 +96,44 @@
 						defaultValue={f.values?.amount ?? ''}
 					/>
 				</Field>
-				<Field id="method" label={t('wallet.method')} error={f.fields?.method}>
-					<select id="method" name="method" bind:value={method}>
-						{#each ['telebirr', 'cbe_birr', 'bank_transfer'] as m (m)}
-							<option value={m}>{tv('method', m)}</option>
+				<fieldset class="field">
+					<legend class="label">{t('wallet.method')}</legend>
+					<div class="rcards">
+						{#each methods as m (m)}
+							<label class="rcard">
+								<input type="radio" name="method" value={m} bind:group={method} />
+								<span class="rcard-b"><span class="callout strong">{tv('method', m)}</span></span>
+							</label>
 						{/each}
-					</select>
-				</Field>
-			</div>
-			<Field id="bank_code" label={t('wallet.bank')} error={f.fields?.bank_code}>
-				<select
+					</div>
+					{#if f.fields?.method}<p class="err">{f.fields.method}</p>{/if}
+				</fieldset>
+				<Field
 					id="bank_code"
-					name="bank_code"
-					required
-					value={bank}
-					onchange={(e) => (bankCode = e.currentTarget.value)}
+					label={t('wallet.bank')}
+					hint={t('wallet.bankHint')}
+					error={f.fields?.bank_code}
 				>
-					<option value="" disabled>—</option>
-					{#each data.banks as b (b.id)}
-						<option value={b.id}>{b.name}</option>
-					{/each}
-				</select>
-			</Field>
-			<div class="grid-2">
+					<span class="select">
+						<select
+							class="input"
+							id="bank_code"
+							name="bank_code"
+							required
+							value={bank}
+							onchange={(e) => (bankCode = e.currentTarget.value)}
+						>
+							<option value="" disabled>—</option>
+							{#each data.banks as b (b.id)}
+								<option value={b.id}>{b.name}</option>
+							{/each}
+						</select>
+						<Icon name="chevron-down" size={18} />
+					</span>
+				</Field>
 				<Field id="destination" label={t('wallet.destination')} error={f.fields?.destination}>
 					<input
+						class="input num"
 						id="destination"
 						name="destination"
 						inputmode={method === 'bank_transfer' ? 'numeric' : 'tel'}
@@ -106,91 +145,126 @@
 				</Field>
 				<Field id="account_name" label={t('wallet.accountName')} error={f.fields?.account_name}>
 					<input
+						class="input"
 						id="account_name"
 						name="account_name"
+						autocomplete="name"
 						required
 						minlength="2"
 						maxlength="100"
 						defaultValue={f.values?.account_name ?? ''}
 					/>
 				</Field>
+				<Submit
+					busy={s.busy}
+					class="btn-primary btn-block"
+					disabled={data.wallet.available_cents < 100}>{t('wallet.submit')}</Submit
+				>
+			</form>
+		{/if}
+	</section>
+
+	<section class="card payouts" aria-labelledby="pl-h">
+		<div class="card-h">
+			<h2 class="card-t" id="pl-h">{t('wallet.payouts')}</h2>
+			{#if data.payouts.length}<span class="foot muted">{t('wallet.last10')}</span>{/if}
+		</div>
+		{#each data.payouts as p (p.id)}
+			<div class="payout-row">
+				<div class="hstack between">
+					<span class="lrow-t num">{amount(p.amount_cents)}</span>
+					<StatusBadge status={p.status} prefix="payoutStatus" />
+				</div>
+				<span class="lrow-s num">{tv('method', p.method)} · {p.destination}</span>
+				<span class="lrow-s num"
+					>{t('wallet.requestedOn', { date: formatDate(p.requested_at, true) })}</span
+				>
+				{#if p.failure_reason}<span class="foot why">{p.failure_reason}</span>{/if}
 			</div>
-			<button class="btn primary block" disabled={s.busy || data.wallet.available_cents < 100}
-				>{t('wallet.submit')}</button
-			>
-		</form>
-	{/if}
-</section>
+		{:else}
+			<p class="sub muted payout-row">{t('wallet.noPayouts')}</p>
+		{/each}
+	</section>
+</div>
 
-<section class="card stack-sm" aria-labelledby="payouts">
-	<h2 id="payouts">{t('wallet.payouts')}</h2>
-	{#if data.payouts.length === 0}
-		<p class="muted">{t('wallet.noPayouts')}</p>
+<section class="vstack gap-14" aria-labelledby="tx-h">
+	<h2 class="t3" id="tx-h">{t('wallet.transactions')}</h2>
+	{#if transactions.length === 0}
+		<EmptyState
+			icon="wallet"
+			level={3}
+			title={t('wallet.noTransactions')}
+			text={t('wallet.noTransactionsLead')}
+		/>
 	{:else}
-		<ul class="list">
-			{#each data.payouts as p (p.id)}
-				<li class="spread">
-					<span class="stack-sm">
-						<span>{tv('method', p.method)} · <span class="mono">{p.destination}</span></span>
-						<span class="muted small">{formatDate(p.requested_at, true)}</span>
-						{#if p.failure_reason}<span class="error-text">{p.failure_reason}</span>{/if}
-					</span>
-					<span class="stack-sm end">
-						<span class="amount">{amount(p.amount_cents)}</span>
-						<StatusBadge status={p.status} prefix="payoutStatus" />
-					</span>
-				</li>
+		<div class="list">
+			{#each transactions as tx (tx.id)}
+				<div class="lrow">
+					<span class="thumb-s dir"
+						><Icon name={debit(tx.type) ? 'arrow-out' : 'arrow-in'} size={18} /></span
+					>
+					<div class="lrow-main">
+						<span class="lrow-t">{tv('txn', tx.type)}</span>
+						<span class="lrow-s num"
+							>{#if tx.order_id}<a href={resolve('/seller/(app)/orders/[id]', { id: tx.order_id })}
+									>{t('order.title', { id: `#${tx.order_id.slice(0, 8)}` })}</a
+								>&nbsp;·&nbsp;{/if}{formatDate(tx.created_at, true)}</span
+						>
+					</div>
+					<span class="lrow-amt" class:debit={debit(tx.type)}
+						>{debit(tx.type) ? '−' : '+'}{amount(tx.amount_cents)}</span
+					>
+				</div>
 			{/each}
-		</ul>
-	{/if}
-</section>
-
-<section class="card stack-sm" aria-labelledby="transactions">
-	<h2 id="transactions">{t('wallet.transactions')}</h2>
-	{#if (data.transactions.items ?? []).length === 0}
-		<p class="muted">{t('wallet.noTransactions')}</p>
-	{:else}
-		<ul class="list">
-			{#each data.transactions.items as tx (tx.id)}
-				<li class="spread">
-					<span class="stack-sm">
-						<span>{tv('txn', tx.type)}</span>
-						<span class="muted small">
-							{formatDate(tx.created_at, true)}
-							{#if tx.order_id}· <a
-									href={resolve('/seller/(app)/orders/[id]', { id: tx.order_id })}
-									class="mono">#{tx.order_id.slice(0, 8)}</a
-								>{/if}
-						</span>
-					</span>
-					<span class="amount" class:debit={debit(tx.type)}>
-						{debit(tx.type) ? '−' : '+'}{amount(tx.amount_cents)}
-					</span>
-				</li>
-			{/each}
-		</ul>
+		</div>
 		<Pagination page={data.transactions.page} pages={data.transactions.total_pages} />
 	{/if}
 </section>
 
 <style>
-	.stats {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 12px;
+	.split.half {
+		gap: 16px;
 	}
-	.stat {
+	.form.payout {
+		gap: 18px;
+	}
+	.field .rcards {
+		gap: 8px;
+	}
+	.rcards .rcard {
+		align-items: center;
+	}
+	legend {
+		margin-bottom: 8px;
+	}
+	.card.payouts {
+		gap: 8px;
+	}
+	.payouts .card-h {
+		padding-bottom: 8px;
+	}
+	.payout-row {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: 2px;
+		padding: 12px 0;
+		border-top: 1px solid var(--line);
 	}
-	.big {
-		font-size: 1.3rem;
+	.payout-row .hstack {
+		gap: 12px;
+		min-height: 28px;
 	}
-	.end {
-		align-items: flex-end;
+	.why {
+		padding-top: 2px;
+		color: var(--danger-fg);
+	}
+	.thumb-s.dir {
+		width: 40px;
+		height: 40px;
+		border-radius: 50%;
+		background: var(--bg);
 	}
 	.debit {
-		color: var(--muted);
+		color: var(--ink-2);
 	}
 </style>

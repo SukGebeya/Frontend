@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Cart</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="guest" cart="{{count}}" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap" style="display: flex; flex-direction: column; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 6px">
+        <h1 class="t1">Cart</h1>
+        <sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}">
+          <p class="sub muted">From <a href="BuyerShop.dc.html" style="font-weight: 600">Tibeb Shop</a> · one shop per order</p>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}">
+        <div class="split aside">
+          <section aria-label="Items" class="list">
+            <form class="lrow" method="post" action="#update" style="flex-direction: column; align-items: stretch; gap: 14px; padding: 16px">
+              <div style="display: flex; gap: 14px; align-items: flex-start">
+                <span class="ph" style="width: 64px; height: 64px; border-radius: 14px; flex: none; background: var(--bg-3)"><svg class="i" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><circle cx="9" cy="10" r="1.75"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+                <div class="lrow-main" style="gap: 2px">
+                  <a href="BuyerProduct.dc.html" class="callout strong" style="color: var(--ink)">Habesha Kemis</a>
+                  <span class="foot muted">Size M</span>
+                  <span class="foot muted num">2,500.00 ETB each</span>
+                </div>
+                <span class="callout strong num" style="white-space: nowrap">{{lineTotal}}</span>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+                <div class="qty" style="height: 44px">
+                  <button type="button" aria-label="Decrease quantity" disabled="{{decOff}}" onClick="{{dec}}" style="width: 42px; height: 42px"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+                  <input name="quantity" type="number" inputmode="numeric" min="1" max="3" value="{{qty}}" aria-label="Quantity for Habesha Kemis, size M" onChange="{{typeQty}}" style="width: 36px">
+                  <button type="button" aria-label="Increase quantity" disabled="{{incOff}}" onClick="{{inc}}" style="width: 42px; height: 42px"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg></button>
+                </div>
+                <button class="btn btn-secondary btn-sm" type="submit">Update</button>
+                <button class="btn btn-link btn-sm" type="submit" formaction="#remove" name="remove" value="habesha-kemis-m" style="margin-left: auto; color: var(--ink-2)">Remove</button>
+              </div>
+            </form>
+          </section>
+
+          <aside class="card" aria-labelledby="sum-h">
+            <h2 class="card-t" id="sum-h">Summary</h2>
+            <div class="mrows">
+              <div class="mrow"><span>Subtotal</span><span>{{subtotal}}</span></div>
+              <div class="mrow"><span>Delivery</span><span>On the payment page</span></div>
+            </div>
+            <p class="foot muted num">Tibeb Shop’s delivery fee (150.00 ETB, free over 3,000.00 ETB) is added on the payment page.</p>
+            <div class="divider"></div>
+            <p class="foot muted" style="display: flex; gap: 8px; align-items: flex-start">
+              <svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 1px"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+              <span>We’re holding these items for you until <span class="num" style="color: var(--ink); font-weight: 600">29 Oct 2026, 13:37</span>.</span>
+            </p>
+            <a class="btn btn-primary btn-block" href="BuyerCheckout.dc.html">Checkout</a>
+            <p class="foot muted" style="display: flex; gap: 8px; align-items: flex-start">
+              <svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 1px; color: var(--accent)"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.9 7 9.5 4.1-1.6 7-5.3 7-9.5V6l-7-3Z"></path><path d="m9 12 2.2 2.2L15.5 10"></path></svg>
+              <span>Your payment is held until you confirm delivery.</span>
+            </p>
+          </aside>
+        </div>
+      </sc-if>
+
+      <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+        <div class="empty">
+          <span class="empty-i"><svg class="i" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8h13l-1.1 11.2a1 1 0 0 1-1 .8H7.6a1 1 0 0 1-1-.8L5.5 8Z"></path><path d="M9 10V7a3 3 0 0 1 6 0v3"></path></svg></span>
+          <h2 class="t3">Your cart is empty</h2>
+          <p class="sub muted">Open a product link from a seller to add something.</p>
+          <a class="btn btn-secondary btn-sm" href="BuyerOrders.dc.html">Track my orders</a>
+        </div>
+      </sc-if>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" signed-in="false" theme="{{theme}}" hint-size="100%,100px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"empty":{"editor":"boolean","default":false},"$preview":{"width":360,"height":1200}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { qty: 1 };
+  }
+  renderVals() {
+    const empty = this.props.empty === true || this.props.empty === 'true';
+    const qty = this.state.qty;
+    const fmt = (n) => n.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ETB';
+    return {
+      theme: this.props.theme ?? 'light',
+      empty: empty,
+      hasItems: !empty,
+      count: empty ? 0 : qty,
+      qty: qty,
+      lineTotal: fmt(2500 * qty),
+      subtotal: fmt(2500 * qty),
+      decOff: qty <= 1,
+      incOff: qty >= 3,
+      dec: () => this.setState({ qty: Math.max(1, qty - 1) }),
+      inc: () => this.setState({ qty: Math.min(3, qty + 1) }),
+      typeQty: (e) => {
+        const n = parseInt(e && e.target ? e.target.value : '1', 10);
+        this.setState({ qty: isNaN(n) ? 1 : Math.max(1, Math.min(3, n)) });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

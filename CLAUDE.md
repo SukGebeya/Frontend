@@ -2,7 +2,9 @@
 
 Guidance for AI coding sessions and contributors in this repository. The API lives in `../Backend` (its `CLAUDE.md` and `docs/` explain the money flow).
 
-`docs/design/BRIEF.md` lists every screen's fields, actions and states. Keep it in step when a page gains or loses a function, and implement visual redesigns against it.
+`docs/design/BRIEF.md` lists every screen's fields, actions and states. Keep it in step when a page gains or loses a function.
+
+**The approved visual design is in `docs/design/claude-design/`** (exported from Claude Design). Start with its `README.md`, which covers the route map, how to read `.dc.html` files and the designer's notes. `gebeya.css` there is the design system as CSS. Pages should match it; the placeholder styles in `src/app.css` are to be replaced.
 
 ## Stack
 
@@ -15,7 +17,7 @@ npm run dev          # :3000 (matches the API's CHAPA_RETURN_URL)
 npm run check        # types
 npm run lint         # prettier + eslint
 npm run test:unit
-npm run test:e2e     # needs the API running with CHAPA_MODE=mock, OTP_DEV_CODE=123456
+npm run test:e2e     # needs the API running with CHAPA_MODE=mock, OTP_DEV_CODE=123456, PAYOUT_RECHECK_INTERVAL=10s
 npm run gen:api      # after the API's swagger changes
 ```
 
@@ -29,5 +31,5 @@ If `npm install` fails with "Cannot read properties of null (reading 'edgesOut')
 - **Forms**: `use:enhance={submitting().submit}`; pass `{ reset: true }` only for forms that add something new. Editable inputs use `defaultValue`, not `value`. Regex `pattern` attributes with `{n}` must be string expressions (`pattern={'[0-9]{6}'}`), or Svelte reads `{6}` as an expression.
 - **Money** is integer santim: parse with `money()`/`parseMoney`, show with `formatMoney(cents, lang())`.
 - **Text** goes through `t('key')`. Add new keys to `en.ts` and `am.ts`; the type checker and `i18n.spec.ts` fail if Amharic is missing a key or a placeholder.
-- **Confirm dialogs** on enhanced forms use `confirmFirst()`, since `use:enhance` ignores `preventDefault`.
+- **Destructive actions** (cancel and refund, delete product) sit behind a `<details class="disclose danger">` that holds the real form, so the confirmation works without JavaScript. Don't use `confirm()`.
 - **Comments:** sparse, explaining why.

@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import EmptyState from '#lib/components/EmptyState.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Pagination from '#lib/components/Pagination.svelte';
 	import StatusBadge from '#lib/components/StatusBadge.svelte';
 	import { formatDate, t } from '#lib/i18n/index.js';
@@ -9,38 +11,46 @@
 	const products = $derived(data.products.items ?? []);
 </script>
 
-<svelte:head><title>{t('products.title')} · Gebeya</title></svelte:head>
+<svelte:head><title>{t('products.title')} · {t('brand.name')}</title></svelte:head>
 
-<div class="spread">
-	<h1>{t('products.title')}</h1>
-	<a class="btn primary" href={resolve('/seller/(app)/products/new')}>+ {t('products.new')}</a>
+<div class="hstack between head">
+	<h1 class="t1">{t('products.title')}</h1>
+	{#if products.length}
+		<a class="btn btn-primary btn-sm" href={resolve('/seller/(app)/products/new')}
+			><Icon name="plus" size={16} />{t('products.new')}</a
+		>
+	{/if}
 </div>
 
 {#if products.length === 0}
-	<p class="card muted">{t('products.empty')}</p>
+	<EmptyState icon="box" title={t('products.emptyTitle')} text={t('products.emptyLead')}>
+		<a class="btn btn-primary btn-sm" href={resolve('/seller/(app)/products/new')}
+			><Icon name="plus" size={16} />{t('products.new')}</a
+		>
+	</EmptyState>
 {:else}
-	<ul class="list card">
+	<div class="list">
 		{#each products as p (p.id)}
-			<li>
-				<a href={resolve('/seller/(app)/products/[id]', { id: p.id })} class="spread item">
-					<span class="stack-sm">
-						<span class="name">{p.name}</span>
-						<span class="muted small">{formatDate(p.updated_at)}</span>
-					</span>
-					<StatusBadge status={p.status} prefix="productStatus" />
-				</a>
-			</li>
+			<a class="lrow" href={resolve('/seller/(app)/products/[id]', { id: p.id })}>
+				<!-- The merchant product list has no image or price yet (see the design README). -->
+				<span class="thumb-s" aria-hidden="true"><Icon name="image" /></span>
+				<div class="lrow-main">
+					<span class="lrow-t">{p.name}</span>
+					<span class="lrow-s num"
+						>{t('products.updated', { date: formatDate(p.updated_at, true) })}</span
+					>
+				</div>
+				<div class="lrow-end"><StatusBadge status={p.status} prefix="productStatus" /></div>
+				<Icon name="chevron-right" size={18} class="chev" />
+			</a>
 		{/each}
-	</ul>
+	</div>
 	<Pagination page={data.products.page} pages={data.products.total_pages} />
 {/if}
 
 <style>
-	.item {
-		color: var(--text);
-		text-decoration: none;
-	}
-	.name {
-		font-weight: 600;
+	.hstack.head {
+		gap: 12px;
+		flex-wrap: nowrap;
 	}
 </style>

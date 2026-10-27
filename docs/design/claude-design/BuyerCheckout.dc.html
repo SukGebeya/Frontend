@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Checkout</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="buyer" cart="1" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap" style="display: flex; flex-direction: column; gap: 24px">
+      <div style="display: flex; flex-direction: column; gap: 4px">
+        <a class="btn btn-link btn-sm" href="BuyerCart.dc.html" style="align-self: flex-start; padding: 0; color: var(--ink-2)"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Cart</a>
+        <h1 class="t1">Checkout</h1>
+      </div>
+
+      <sc-if value="{{noAddress}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-error" role="alert">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+          <div class="alert-b"><strong>Choose a delivery address</strong><span>Pick a saved address or add a new one, then continue.</span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{stockChanged}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-error" role="alert">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+          <div class="alert-b"><strong>Habesha Kemis, size M just sold out</strong><span>It went out of stock after you added it. <a href="BuyerCart.dc.html">Update your cart</a></span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{twoShops}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-error" role="alert">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+          <div class="alert-b"><strong>Your cart has items from two shops</strong><span>Each order is from one shop. <a href="BuyerCart.dc.html">Remove items from one shop</a> to continue.</span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{chapaDown}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-error" role="alert">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+          <div class="alert-b"><strong>Payments are unavailable right now</strong><span>Chapa isn’t responding. No money was taken. Try again in a few minutes.</span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{orderExists}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-info" role="status">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg>
+          <div class="alert-b"><strong>You already started this order</strong><span>Order #3eb05c7c is waiting for payment. <a href="BuyerOrderPaid.dc.html">View order</a></span></div>
+        </div>
+      </sc-if>
+      <sc-if value="{{unverified}}" hint-placeholder-val="{{false}}">
+        <div class="alert alert-warning" role="status">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4 2.8 19.5h18.4L12 4Z"></path><path d="M12 10v4M12 16.8v.2"></path></svg>
+          <div class="alert-b">
+            <strong>Verify your phone to pay</strong>
+            <span>We’ll text a 6-digit code to 0911 234 567.</span>
+            <a class="btn btn-primary btn-sm" href="VerifyPhone.dc.html" style="align-self: flex-start; margin-top: 8px; color: var(--on-primary); text-decoration: none">Verify now</a>
+          </div>
+        </div>
+      </sc-if>
+
+      <form id="checkout" method="post" action="#pay"></form>
+
+      <div class="split aside">
+        <div style="display: flex; flex-direction: column; gap: 32px; min-width: 0">
+          <section style="display: flex; flex-direction: column; gap: 14px" aria-labelledby="addr-h">
+            <h2 class="t3" id="addr-h">Delivery address</h2>
+            <sc-if value="{{hasSaved}}" hint-placeholder-val="{{true}}">
+              <fieldset class="rcards">
+                <legend class="sr">Choose a saved address</legend>
+                <label class="rcard">
+                  <input type="radio" name="address" value="home" form="checkout" checked="checked">
+                  <span class="rcard-b">
+                    <span style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap"><span class="callout strong">Abebe Bikila</span><span class="badge plain">Default</span></span>
+                    <span class="sub muted num">0911 234 567</span>
+                    <span class="sub muted">Bole, near Edna Mall, house 12 · Woreda 03, Bole, Addis Ababa</span>
+                  </span>
+                </label>
+                <label class="rcard">
+                  <input type="radio" name="address" value="office" form="checkout">
+                  <span class="rcard-b">
+                    <span class="callout strong">Abebe Bikila · Office</span>
+                    <span class="sub muted num">0911 234 567</span>
+                    <span class="sub muted">Kazanchis, Nigist Towers, 4th floor · Woreda 08, Kirkos, Addis Ababa</span>
+                  </span>
+                </label>
+              </fieldset>
+            </sc-if>
+
+            <details class="disclose" open="{{formOpen}}">
+              <summary>
+                <span style="display: inline-flex; align-items: center; gap: 10px"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"></path></svg>Add a new address</span>
+                <svg class="i chev-d" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>
+              </summary>
+              <form class="disclose-b form" method="post" action="#address" style="gap: 16px">
+                <div class="field"><label class="label" for="a-name">Full name</label><input class="input" id="a-name" name="full_name" type="text" autocomplete="name" required="required"></div>
+                <div class="field"><label class="label" for="a-phone">Phone for delivery</label><input class="input num" id="a-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" value="0911 234 567" required="required"></div>
+                <div class="field">
+                  <label class="label" for="a-l1">Address</label>
+                  <input class="input" id="a-l1" name="line1" type="text" autocomplete="address-line1" aria-describedby="a-l1-h" required="required">
+                  <p class="hint" id="a-l1-h">For example: Bole, near Edna Mall, house 12</p>
+                </div>
+                <div class="field"><label class="label" for="a-l2">More details <span class="opt">(optional)</span></label><input class="input" id="a-l2" name="line2" type="text" autocomplete="address-line2"></div>
+                <div class="field">
+                  <label class="label" for="a-city">City</label>
+                  <span class="select"><select class="input" id="a-city" name="city"><option>Addis Ababa</option></select><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+                </div>
+                <div class="row2">
+                  <div class="field"><label class="label" for="a-sub">Sub-city</label><input class="input" id="a-sub" name="sub_city" type="text" list="subcities" autocomplete="off"></div>
+                  <div class="field"><label class="label" for="a-wor">Woreda</label><input class="input num" id="a-wor" name="woreda" type="text" inputmode="numeric"></div>
+                </div>
+                <datalist id="subcities"><option value="Addis Ketema"></option><option value="Akaky Kaliti"></option><option value="Arada"></option><option value="Bole"></option><option value="Gullele"></option><option value="Kirkos"></option><option value="Kolfe Keranio"></option><option value="Lemi Kura"></option><option value="Lideta"></option><option value="Nifas Silk-Lafto"></option><option value="Yeka"></option></datalist>
+                <label class="check"><input type="checkbox" name="default"><span>Make this my default address</span></label>
+                <button class="btn btn-secondary btn-block" type="submit">Save address</button>
+              </form>
+            </details>
+          </section>
+
+          <section class="field" aria-labelledby="note-l">
+            <label class="t3" id="note-l" for="note">Note to seller <span class="callout faint" style="font-weight: 400">(optional)</span></label>
+            <textarea class="input" id="note" name="note" form="checkout" maxlength="500" placeholder="Best time to deliver, a landmark, a question about size…"></textarea>
+            <div class="count-row"><span class="hint">Tibeb Shop sees this with your order.</span><span class="hint num">0 / 500</span></div>
+          </section>
+        </div>
+
+        <aside class="card" aria-labelledby="sum-h" style="gap: 18px">
+          <div class="card-h"><h2 class="card-t" id="sum-h">Order summary</h2><span class="foot muted">Tibeb Shop</span></div>
+          <div style="display: flex; gap: 12px; align-items: center">
+            <span class="thumb-s"><svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2.5"></rect><circle cx="9" cy="10" r="1.75"></circle><path d="m21 16-5-5-9 9"></path></svg></span>
+            <div class="lrow-main"><span class="callout strong">Habesha Kemis</span><span class="foot muted">Size M × 1</span></div>
+            <span class="callout num">2,500.00 ETB</span>
+          </div>
+          <div class="mrows">
+            <div class="mrow"><span>Items</span><span>2,500.00 ETB</span></div>
+            <div class="mrow"><span>Delivery</span><span>150.00 ETB</span></div>
+            <div class="mrow total big"><span>Total</span><span>2,650.00 ETB</span></div>
+          </div>
+          <p class="foot muted" style="display: flex; gap: 8px; align-items: flex-start"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true" style="margin-top: 1px"><rect x="3" y="6" width="18" height="13" rx="2.5"></rect><path d="M3 10.5h18"></path></svg><span>You will pay on Chapa with Telebirr, CBE Birr or card.</span></p>
+          <sc-if value="{{idle}}" hint-placeholder-val="{{true}}">
+            <button class="btn btn-primary btn-block" type="submit" form="checkout" disabled="{{unverified}}">Continue to payment</button>
+          </sc-if>
+          <sc-if value="{{submitting}}" hint-placeholder-val="{{false}}">
+            <button class="btn btn-primary btn-block is-busy" type="submit" form="checkout" disabled="disabled" aria-busy="true"><span class="spin" aria-hidden="true"></span>Opening Chapa…</button>
+          </sc-if>
+          <div class="trust" style="background: var(--bg); padding: 14px 16px">
+            <span class="trust-i" style="width: 32px; height: 32px"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.9 7 9.5 4.1-1.6 7-5.3 7-9.5V6l-7-3Z"></path><path d="m9 12 2.2 2.2L15.5 10"></path></svg></span>
+            <span class="trust-b"><span class="trust-t">Held until you confirm delivery</span><span class="trust-p">Gebeya pays Tibeb Shop only after you confirm you received your order.</span></span>
+          </div>
+        </aside>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"phoneVerified":{"editor":"boolean","default":true},"savedAddresses":{"editor":"boolean","default":true},"newAddressOpen":{"editor":"boolean","default":false},"submitting":{"editor":"boolean","default":false},"notice":{"editor":"enum","options":["none","no address chosen","item sold out","two shops","chapa unavailable","order exists"],"default":"none"},"$preview":{"width":360,"height":1600}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const b = (v, d) => v === undefined ? d : (v === true || v === 'true');
+    const notice = this.props.notice ?? 'none';
+    const saved = b(this.props.savedAddresses, true);
+    const submitting = b(this.props.submitting, false);
+    return {
+      theme: this.props.theme ?? 'light',
+      unverified: !b(this.props.phoneVerified, true),
+      hasSaved: saved,
+      formOpen: !saved || b(this.props.newAddressOpen, false),
+      submitting: submitting,
+      idle: !submitting,
+      noAddress: notice === 'no address chosen',
+      stockChanged: notice === 'item sold out',
+      twoShops: notice === 'two shops',
+      chapaDown: notice === 'chapa unavailable',
+      orderExists: notice === 'order exists'
+    };
+  }
+}
+</script>
+</body>
+</html>

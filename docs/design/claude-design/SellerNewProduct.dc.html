@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>New product</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="seller" cart="0" active="shop" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap shell">
+      <div class="slot"><dc-import name="SellerNav" active="products" theme="{{theme}}" hint-size="100%,124px"></dc-import></div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0; max-width: 600px">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <a class="btn btn-link btn-sm" href="SellerProducts.dc.html" style="align-self: flex-start; padding: 0; color: var(--ink-2)"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Products</a>
+          <h1 class="t1">New product</h1>
+          <p class="body muted pretty">Start with the basics. You can add more options and photos next.</p>
+        </div>
+
+        <form class="form" method="post" action="#create">
+          <div class="field">
+            <label class="label" for="p-name">Product name</label>
+            <input class="input" id="p-name" name="name" type="text" required="required">
+          </div>
+          <div class="field">
+            <label class="label" for="p-desc">Description <span class="opt">(optional)</span></label>
+            <textarea class="input" id="p-desc" name="description" placeholder="Material, size guide, care"></textarea>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label class="label" for="p-price">Price</label>
+              <div class="affix"><input class="input num" id="p-price" name="price" type="text" inputmode="decimal" aria-describedby="p-price-h" required="required"><span class="affix-end">ETB</span></div>
+              <p class="hint" id="p-price-h">Like 2,500 or 2500.50</p>
+            </div>
+            <div class="field">
+              <label class="label" for="p-stock">In stock</label>
+              <input class="input num" id="p-stock" name="stock" type="number" inputmode="numeric" min="0" value="1" required="required">
+            </div>
+          </div>
+          <div class="field">
+            <label class="label" for="p-opt">Option name</label>
+            <input class="input" id="p-opt" name="option" type="text" value="Standard" aria-describedby="p-opt-h">
+            <p class="hint" id="p-opt-h">For example Size M or Red. Keep “Standard” if there’s only one kind. Add more options after you create it.</p>
+          </div>
+          <div class="field">
+            <label class="label" for="p-img">Image link <span class="opt">(optional)</span></label>
+            <input class="input" id="p-img" name="image_url" type="url" inputmode="url" placeholder="https://" aria-describedby="p-img-h">
+            <p class="hint" id="p-img-h">An https link to a photo you’ve already posted online. Photo upload is planned for later.</p>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Create product</button>
+          <p class="foot muted" style="text-align: center">It goes live as Active, so buyers can open its link right away.</p>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":360,"height":1500}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

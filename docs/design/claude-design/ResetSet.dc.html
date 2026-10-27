@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Set a new password</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="guest" cart="0" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap">
+      <div class="narrow" style="display: flex; flex-direction: column; gap: 28px; padding-top: 24px">
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px">
+          <span class="logo-m lg" aria-hidden="true">ገ</span>
+          <p class="eyebrow">Step 2 of 2</p>
+          <h1 class="t1">Set a new password</h1>
+        </div>
+
+        <div class="alert alert-info" role="status">
+          <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg>
+          <div class="alert-b"><span>If that number has an account, we sent a 6-digit code. It expires in 5 minutes.</span></div>
+        </div>
+
+        <form class="form" method="post" action="#reset-set">
+          <div class="field">
+            <label class="label" for="rs-code">Code from SMS</label>
+            <input class="input otp" id="rs-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required="required">
+          </div>
+          <div class="field">
+            <label class="label" for="rs-pw">New password</label>
+            <input class="input" id="rs-pw" name="password" type="password" autocomplete="new-password" minlength="8" aria-describedby="rs-pw-h" required="required">
+            <p class="hint" id="rs-pw-h">At least 8 characters.</p>
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Set new password</button>
+        </form>
+
+        <form method="post" action="#reset-send" style="display: flex; justify-content: center; align-items: center; gap: 4px; flex-wrap: wrap">
+          <span class="sub muted">No code?</span>
+          <button class="btn btn-link btn-sm" type="submit" style="padding: 0 4px">Send a new code</button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" signed-in="false" theme="{{theme}}" hint-size="100%,100px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":360,"height":950}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reset password</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="guest" cart="0" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap">
+      <div class="narrow" style="display: flex; flex-direction: column; gap: 28px; padding-top: 24px">
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px">
+          <span class="logo-m lg" aria-hidden="true">ገ</span>
+          <p class="eyebrow">Step 1 of 2</p>
+          <h1 class="t1">Reset password</h1>
+          <p class="body muted pretty">Enter the phone number you signed up with. We’ll text a code if it has an account.</p>
+        </div>
+
+        <form class="form" method="post" action="#reset-send">
+          <div class="field">
+            <label class="label" for="rp-phone">Phone</label>
+            <input class="input num" id="rp-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="0911 234 567" required="required">
+          </div>
+          <button class="btn btn-primary btn-block" type="submit">Send code</button>
+        </form>
+
+        <p class="sub muted" style="text-align: center">Remembered it? <a href="Login.dc.html" style="font-weight: 600">Log in</a></p>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" signed-in="false" theme="{{theme}}" hint-size="100%,100px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"$preview":{"width":360,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    return { theme: this.props.theme ?? 'light' };
+  }
+}
+</script>
+</body>
+</html>

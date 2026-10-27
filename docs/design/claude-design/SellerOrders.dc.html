@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Seller orders</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="seller" cart="0" active="shop" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap shell">
+      <div class="slot"><dc-import name="SellerNav" active="orders" theme="{{theme}}" hint-size="100%,124px"></dc-import></div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0">
+        <div style="display: flex; flex-direction: column; gap: 6px">
+          <h1 class="t1">Orders</h1>
+          <p class="sub muted pretty">You’re paid only when the buyer confirms delivery.</p>
+          <sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}"><p class="sub" style="color: var(--warning-fg); font-weight: 600">3 orders need you</p></sc-if>
+        </div>
+
+        <sc-if value="{{hasItems}}" hint-placeholder-val="{{true}}">
+          <div class="list">
+            <sc-for list="{{orders}}" as="o" hint-placeholder-count="6">
+              <a class="{{o.rowCls}}" href="{{o.href}}">
+                <div class="lrow-main">
+                  <span class="lrow-t num">#{{o.id}}</span>
+                  <span class="lrow-s">{{o.buyer}} · {{o.items}}</span>
+                  <span class="lrow-s num">{{o.date}}</span>
+                  <sc-if value="{{o.next}}" hint-placeholder-val="{{false}}"><span class="foot" style="color: var(--warning-fg); font-weight: 600">{{o.next}}</span></sc-if>
+                </div>
+                <div class="lrow-end">
+                  <span class="lrow-amt">{{o.total}}</span>
+                  <span class="{{o.cls}}">{{o.status}}</span>
+                </div>
+                <svg class="i chev" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>
+              </a>
+            </sc-for>
+          </div>
+          <nav class="pager" aria-label="Pages">
+            <span class="btn btn-secondary btn-sm" aria-disabled="true"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Previous</span>
+            <span class="pager-l">Page 1 of 2</span>
+            <a class="btn btn-secondary btn-sm" href="#page-2">Next<svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+          </nav>
+        </sc-if>
+
+        <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+          <div class="empty">
+            <span class="empty-i"><svg class="i" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"></path><path d="M9 8h6M9 12h6"></path></svg></span>
+            <h2 class="t3">No orders yet</h2>
+            <p class="sub muted">Orders from your product links show up here.</p>
+            <a class="btn btn-secondary btn-sm" href="SellerProducts.dc.html">Share a product</a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"empty":{"editor":"boolean","default":false},"$preview":{"width":360,"height":1400}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const empty = this.props.empty === true || this.props.empty === 'true';
+    const tone = { Paid: ' b-info', Preparing: ' b-info', Shipped: ' b-info', Delivered: ' b-success', Cancelled: '' };
+    const rows = [
+      { id: '3eb05c7c', buyer: 'Abebe Bikila', items: 'Habesha Kemis · M × 1', date: '22 Oct 2026, 13:37', total: '2,650.00 ETB', status: 'Paid', hl: true, next: 'Accept and prepare', href: 'SellerOrder.dc.html' },
+      { id: 'c81d4f02', buyer: 'Meron Tadesse', items: 'Netela Scarf × 2', date: '22 Oct 2026, 11:05', total: '1,850.00 ETB', status: 'Paid', hl: true, next: 'Accept and prepare', href: 'SellerOrder.dc.html' },
+      { id: '5a7e9b13', buyer: 'Dawit Girma', items: 'Jebena Coffee Pot × 1', date: '21 Oct 2026, 09:12', total: '1,350.00 ETB', status: 'Preparing', hl: true, next: 'Ready to ship', href: 'SellerOrderPreparing.dc.html' },
+      { id: '0b9c6e88', buyer: 'Selam Tesfaye', items: 'Netela Scarf × 1', date: '20 Oct 2026, 16:30', total: '1,000.00 ETB', status: 'Shipped', href: 'SellerOrderShipped.dc.html' },
+      { id: '7f21a9b3', buyer: 'Hanna Alemu', items: 'Habesha Kemis · S × 1', date: '18 Oct 2026, 10:02', total: '2,650.00 ETB', status: 'Delivered', href: 'SellerOrderShipped.dc.html' },
+      { id: 'e4a3d7f1', buyer: 'Yonas Haile', items: 'Kuta Shawl × 1', date: '15 Oct 2026, 19:48', total: '1,250.00 ETB', status: 'Cancelled', href: 'SellerOrder.dc.html' }
+    ];
+    return {
+      theme: this.props.theme ?? 'light',
+      empty: empty,
+      hasItems: !empty,
+      orders: rows.map((r) => Object.assign({ next: '' }, r, {
+        cls: 'badge' + (tone[r.status] || ''),
+        rowCls: 'lrow' + (r.hl ? ' hl' : '')
+      }))
+    };
+  }
+}
+</script>
+</body>
+</html>

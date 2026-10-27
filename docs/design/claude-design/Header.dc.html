@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Header</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<header class="g hdr {{theme}}" lang="{{lang}}">
+  <div class="wrap hdr-in">
+    <a class="logo" href="Home.dc.html" aria-label="{{t.home}}">
+      <span class="logo-m" aria-hidden="true">ገ</span>
+      <span>{{t.brand}}</span>
+    </a>
+    <sc-if value="{{signedIn}}" hint-placeholder-val="{{false}}">
+      <div class="wide-only">
+        <a class="navlink {{ordersOn}}" href="BuyerOrders.dc.html">{{t.orders}}</a>
+        <sc-if value="{{isSeller}}" hint-placeholder-val="{{false}}">
+          <a class="navlink {{shopOn}}" href="SellerOverview.dc.html">{{t.shop}}</a>
+        </sc-if>
+        <sc-if value="{{isBuyer}}" hint-placeholder-val="{{false}}">
+          <a class="navlink" href="SellerOnboarding.dc.html">{{t.openShop}}</a>
+        </sc-if>
+      </div>
+    </sc-if>
+    <a class="navlink" href="#language" hreflang="{{otherLang}}" lang="{{otherLang}}">{{t.switchTo}}</a>
+    <a class="ibtn" href="BuyerCart.dc.html" aria-label="{{cartLabel}}">
+      <svg class="i" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M5.5 8h13l-1.1 11.2a1 1 0 0 1-1 .8H7.6a1 1 0 0 1-1-.8L5.5 8Z"></path><path d="M9 10V7a3 3 0 0 1 6 0v3"></path></svg>
+      <sc-if value="{{hasCart}}" hint-placeholder-val="{{true}}"><span class="count" aria-hidden="true">{{cart}}</span></sc-if>
+    </a>
+    <sc-if value="{{isGuest}}" hint-placeholder-val="{{true}}">
+      <a class="btn btn-primary btn-sm" href="Login.dc.html" style="margin-left: 6px">{{t.login}}</a>
+    </sc-if>
+    <sc-if value="{{signedIn}}" hint-placeholder-val="{{false}}">
+      <div class="narrow-only">
+        <details class="menu" open="{{menuOpen}}">
+          <summary class="ibtn" aria-label="{{t.menu}}">
+            <svg class="i" width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h16M4 15h16"></path></svg>
+          </summary>
+          <div class="menu-p">
+            <a href="BuyerOrders.dc.html">
+              <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3Z"></path><path d="M9 8h6M9 12h6"></path></svg>
+              {{t.orders}}
+            </a>
+            <sc-if value="{{isSeller}}" hint-placeholder-val="{{false}}">
+              <a href="SellerOverview.dc.html">
+                <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"></path><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"></path><path d="M5.5 11.5V20h13v-8.5M10 20v-5h4v5"></path></svg>
+                {{t.shop}}
+              </a>
+            </sc-if>
+            <sc-if value="{{isBuyer}}" hint-placeholder-val="{{false}}">
+              <a href="SellerOnboarding.dc.html">
+                <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9.5 5.5 4h13L20 9.5"></path><path d="M4 9.5a2.7 2.7 0 0 0 5.3 0 2.7 2.7 0 0 0 5.4 0 2.7 2.7 0 0 0 5.3 0"></path><path d="M5.5 11.5V20h13v-8.5M10 20v-5h4v5"></path></svg>
+                {{t.openShop}}
+              </a>
+            </sc-if>
+          </div>
+        </details>
+      </div>
+    </sc-if>
+  </div>
+</header>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"lang":{"editor":"enum","options":["en","am"],"default":"en"},"user":{"editor":"enum","options":["guest","buyer","seller"],"default":"guest"},"cart":{"editor":"int","min":0,"max":99,"default":1},"active":{"editor":"enum","options":["none","orders","shop"],"default":"none"},"menuOpen":{"editor":"boolean","default":false},"$preview":{"width":360,"height":61}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const lang = this.props.lang ?? 'en';
+    const user = this.props.user ?? 'guest';
+    const cart = Number(this.props.cart ?? 1) || 0;
+    const active = this.props.active ?? 'none';
+    const dict = {
+      en: { brand: 'Gebeya', home: 'Gebeya home', orders: 'My orders', shop: 'My shop', openShop: 'Open a shop', login: 'Log in', menu: 'Menu', switchTo: 'አማርኛ', cart: 'Cart', item: 'item', items: 'items' },
+      am: { brand: 'ገበያ', home: 'የገበያ መነሻ', orders: 'ትዕዛዞቼ', shop: 'ሱቄ', openShop: 'ሱቅ ይክፈቱ', login: 'ግባ', menu: 'ማውጫ', switchTo: 'English', cart: 'ጋሪ', item: 'ዕቃ', items: 'ዕቃዎች' }
+    };
+    const t = dict[lang] || dict.en;
+    return {
+      theme: this.props.theme ?? 'light',
+      lang: lang,
+      otherLang: lang === 'am' ? 'en' : 'am',
+      t: t,
+      cart: cart,
+      hasCart: cart > 0,
+      cartLabel: t.cart + (cart > 0 ? ', ' + cart + ' ' + (cart === 1 ? t.item : t.items) : ''),
+      isGuest: user === 'guest',
+      signedIn: user !== 'guest',
+      isSeller: user === 'seller',
+      isBuyer: user === 'buyer',
+      menuOpen: this.props.menuOpen === true || this.props.menuOpen === 'true',
+      ordersOn: active === 'orders' ? 'is-on' : '',
+      shopOn: active === 'shop' ? 'is-on' : ''
+    };
+  }
+}
+</script>
+</body>
+</html>

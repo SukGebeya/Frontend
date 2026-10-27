@@ -4,83 +4,136 @@
 	import Alert from '#lib/components/Alert.svelte';
 	import CopyLink from '#lib/components/CopyLink.svelte';
 	import StatusBadge from '#lib/components/StatusBadge.svelte';
-	import { lang, t } from '#lib/i18n/index.js';
-	import { formatMoney } from '#lib/money.js';
+	import { lang, t, tv } from '#lib/i18n/index.js';
+	import { currency, formatAmount, formatMoney } from '#lib/money.js';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 	const d = $derived(data.dashboard);
-	const amount = (cents: number) => formatMoney(cents, lang());
+	const kyc = $derived(page.data.user?.kyc_status ?? 'pending');
 	const shopUrl = $derived(`${page.url.origin}/s/${data.profile.shop_slug}`);
-	const counts = $derived(Object.entries(d.orders_by_status ?? {}).filter(([, n]) => n > 0));
+	// In the order a shop works through them.
+	const statuses = [
+		'paid',
+		'processing',
+		'shipped',
+		'delivered',
+		'disputed',
+		'cancelled',
+		'refunded'
+	];
+	const counts = $derived(
+		statuses.map((s) => [s, d.orders_by_status?.[s] ?? 0] as const).filter(([, n]) => n > 0)
+	);
+	const kycTone: Record<string, string> = {
+		submitted: 'b-info',
+		verified: 'b-success',
+		rejected: 'b-danger'
+	};
 </script>
 
-<svelte:head><title>{t('seller.nav.overview')} · Gebeya</title></svelte:head>
+<svelte:head><title>{t('seller.nav.overview')} · {t('brand.name')}</title></svelte:head>
 
-{#if !d.is_verified}
-	<Alert tone="info">{t('seller.notVerified')}</Alert>
+{#snippet money(cents: number)}{formatAmount(cents)}<small> {currency(lang())}</small>{/snippet}
+
+<h1 class="t1">{t('seller.nav.overview')}</h1>
+
+{#if !d.is_verified || kyc !== 'verified'}
+	<Alert tone="info" title={t('seller.payoutsLocked')}>
+		<span>{t('seller.payoutsLockedLead')}</span>
+		<span class="hstack gap-6 checks">
+			<span class="badge" class:b-success={d.is_verified}
+				>{d.is_verified ? t('seller.shopVerified') : t('seller.shopNotVerified')}</span
+			>
+			<span class="badge {kycTone[kyc] ?? ''}">{tv('kyc', kyc)}</span>
+		</span>
+	</Alert>
 {/if}
 
-<section class="stats">
-	<div class="card stat">
-		<span class="muted small">{t('seller.available')}</span>
-		<span class="big amount">{amount(d.available_cents)}</span>
-	</div>
-	<div class="card stat">
-		<span class="muted small">{t('seller.balance')}</span>
-		<span class="big amount">{amount(d.balance_cents)}</span>
+<div class="stats">
+	<a class="stat" class:hi={d.orders_action_required > 0} href={resolve('/seller/(app)/orders')}>
+		<span class="stat-l">{t('seller.actionRequired')}</span>
+		<span class="stat-v">{d.orders_action_required}</span>
+		<span class="stat-s">{t('seller.toOrders')}</span>
+	</a>
+	<a class="stat" href={resolve('/seller/(app)/wallet')}>
+		<span class="stat-l">{t('seller.available')}</span>
+		<span class="stat-v">{@render money(d.available_cents)}</span>
+		<span class="stat-s">{t('seller.toWallet')}</span>
+	</a>
+	<div class="stat">
+		<span class="stat-l">{t('seller.balance')}</span>
+		<span class="stat-v">{@render money(d.balance_cents)}</span>
 		{#if d.pending_payout_cents > 0}
-			<span class="muted small">{t('seller.held')}: {amount(d.pending_payout_cents)}</span>
+			<span class="stat-s"
+				>{t('seller.heldAmount', { amount: formatMoney(d.pending_payout_cents, lang()) })}</span
+			>
 		{/if}
 	</div>
-	<div class="card stat">
-		<span class="muted small">{t('seller.totalSales')}</span>
-		<span class="big amount">{amount(d.total_sales_cents)}</span>
+	<div class="stat">
+		<span class="stat-l">{t('seller.totalSales')}</span>
+		<span class="stat-v">{@render money(d.total_sales_cents)}</span>
 	</div>
-	<a
-		class="card stat action"
-		class:hot={d.orders_action_required > 0}
-		href={resolve('/seller/(app)/orders')}
-	>
-		<span class="muted small">{t('seller.actionRequired')}</span>
-		<span class="big">{d.orders_action_required}</span>
-	</a>
-</section>
+</div>
 
-{#if counts.length}
-	<section class="card row">
-		{#each counts as [status, n] (status)}
-			<span class="row"><StatusBadge {status} /> <span class="mono">{n}</span></span>
-		{/each}
+<div class="split half">
+	<section class="card by-status" aria-labelledby="ost-h">
+		<div class="card-h">
+			<h2 class="card-t" id="ost-h">{t('seller.byStatus')}</h2>
+			<a class="btn btn-link btn-sm" href={resolve('/seller/(app)/orders')}
+				>{t('seller.allOrders')}</a
+			>
+		</div>
+		{#if counts.length}
+			<div class="rows">
+				{#each counts as [status, n] (status)}
+					<a class="row" href={resolve('/seller/(app)/orders')}>
+						<StatusBadge {status} />
+						<span class="callout strong num">{n}</span>
+					</a>
+				{/each}
+			</div>
+		{:else}
+			<p class="callout muted">{t('sorders.emptyLead')}</p>
+		{/if}
 	</section>
-{/if}
 
-<section class="card stack-sm">
-	<h2>{t('seller.yourLink')}</h2>
-	<CopyLink url={shopUrl} />
-</section>
+	<section class="card" aria-labelledby="share-h">
+		<div class="vstack gap-4">
+			<h2 class="card-t" id="share-h">{t('seller.shareTitle')}</h2>
+			<p class="foot muted">{t('seller.shareLead')}</p>
+		</div>
+		<CopyLink url={shopUrl} label={t('seller.shopLink')} />
+	</section>
+</div>
 
 <style>
-	.stats {
-		display: grid;
-		grid-template-columns: repeat(2, 1fr);
-		gap: 12px;
+	.checks {
+		padding-top: 6px;
 	}
-	.stat {
+	.checks .badge {
+		background: var(--surface);
+	}
+	.split.half {
+		gap: 16px;
+	}
+	.card.by-status {
+		padding-bottom: 8px;
+	}
+	.rows {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		margin: 0 -4px;
 	}
-	.big {
-		font-size: 1.3rem;
-		font-weight: 700;
-	}
-	.action {
-		color: var(--text);
+	.row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		min-height: 48px;
+		padding: 0 4px;
+		border-top: 1px solid var(--line);
+		color: var(--ink);
 		text-decoration: none;
-	}
-	.action.hot {
-		border-color: var(--gold);
-		background: var(--warn-soft);
 	}
 </style>

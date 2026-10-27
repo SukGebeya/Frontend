@@ -15,9 +15,14 @@ export function formatAmount(cents: number): string {
 	return `${sign}${group(whole)}.${frac}`;
 }
 
+/** "ETB", or "ብር" in Amharic */
+export function currency(lang: string = 'en'): string {
+	return lang === 'am' ? 'ብር' : 'ETB';
+}
+
 /** 1234500 → "12,345.00 ETB" (or "ብር" in Amharic) */
 export function formatMoney(cents: number, lang: string = 'en'): string {
-	return `${formatAmount(cents)} ${lang === 'am' ? 'ብር' : 'ETB'}`;
+	return `${formatAmount(cents)} ${currency(lang)}`;
 }
 
 /**

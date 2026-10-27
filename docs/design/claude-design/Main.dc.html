@@ -1,0 +1,374 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gebeya tokens</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g" lang="en" style="width: 1440px; padding: 104px 112px 128px; display: flex; flex-direction: column; gap: 112px">
+
+  <section style="display: flex; flex-direction: column; gap: 56px">
+    <div style="display: flex; align-items: center; gap: 14px">
+      <span class="logo-m lg" aria-hidden="true">ገ</span>
+      <div style="display: flex; flex-direction: column">
+        <span style="font-size: 22px; line-height: 28px; font-weight: 700; letter-spacing: -0.02em">Gebeya</span>
+        <span class="sub muted" lang="am">ገበያ · ለማኅበራዊ ሚዲያ ሻጮች አስተማማኝ ክፍያ</span>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 20px; max-width: 880px">
+      <h1 class="display">Design system</h1>
+      <p class="t3 muted" style="font-weight: 400; line-height: 28px; max-width: 760px">Safe payments for social sellers. Plain, calm and reassuring — in English and Amharic, light and dark, from a 360&nbsp;px phone to a 1100&nbsp;px desktop.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+      <div class="card" style="gap: 8px; padding: 28px">
+        <h2 class="t3">One accent</h2>
+        <p class="callout muted">White, near-black and greys carry the interface. Green is kept for links, focus, progress and buyer protection.</p>
+      </div>
+      <div class="card" style="gap: 8px; padding: 28px">
+        <h2 class="t3">Words before colour</h2>
+        <p class="callout muted">Every status is written out in a badge. Colour only supports the label, never replaces it.</p>
+      </div>
+      <div class="card" style="gap: 8px; padding: 28px">
+        <h2 class="t3">Phone first</h2>
+        <p class="callout muted">Designed at 360&nbsp;px with 44&nbsp;px targets and plain forms that submit without JavaScript.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+      <h2 class="t1">Colour · light</h2>
+      <p class="sub faint">CSS custom properties on <code>.g</code></p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px 20px">
+      <sc-for list="{{light}}" as="s" hint-placeholder-count="12">
+        <div class="spec" style="gap: 10px">
+          <div class="swatch" style="background: {{s.hex}}"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span class="sub strong">{{s.name}}</span>
+            <span class="foot muted num">{{s.hex}}</span>
+            <span class="foot faint">{{s.use}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section class="g dark" style="display: flex; flex-direction: column; gap: 32px; padding: 56px; border-radius: 32px; margin: 0 -56px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+      <h2 class="t1">Colour · dark</h2>
+      <p class="sub faint">Add <code>.dark</code> to the root; follows the phone setting</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 28px 20px">
+      <sc-for list="{{dark}}" as="s" hint-placeholder-count="12">
+        <div class="spec" style="gap: 10px">
+          <div class="swatch" style="background: {{s.hex}}"></div>
+          <div style="display: flex; flex-direction: column; gap: 2px">
+            <span class="sub strong">{{s.name}}</span>
+            <span class="foot muted num">{{s.hex}}</span>
+            <span class="foot faint">{{s.use}}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+      <h2 class="t1">Status tones</h2>
+      <p class="sub faint">Badges always carry a written label. Tones from the brief.</p>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px">
+      <div class="card" style="padding: 28px; gap: 20px">
+        <p class="eyebrow">Light</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <span class="badge">Neutral</span>
+          <span class="badge b-info">Info</span>
+          <span class="badge b-success">Success</span>
+          <span class="badge b-warning">Warning</span>
+          <span class="badge b-danger">Danger</span>
+        </div>
+        <div class="foot muted num" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
+          <span>#EFEFF2<br>#4A4A52</span><span>#E8F0FD<br>#1D4FC4</span><span>#E4F4EA<br>#0A6B44</span><span>#FCF1DC<br>#885200</span><span>#FCE9E8<br>#B3261E</span>
+        </div>
+      </div>
+      <div class="card g dark" style="padding: 28px; gap: 20px">
+        <p class="eyebrow">Dark</p>
+        <div style="display: flex; flex-wrap: wrap; gap: 10px">
+          <span class="badge">Neutral</span>
+          <span class="badge b-info">Info</span>
+          <span class="badge b-success">Success</span>
+          <span class="badge b-warning">Warning</span>
+          <span class="badge b-danger">Danger</span>
+        </div>
+        <div class="foot muted num" style="display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px">
+          <span>#2A2A2E<br>#C8C8CF</span><span>#14264A<br>#8DB4FF</span><span>#0F2E20<br>#6EDBA3</span><span>#33260C<br>#F2C064</span><span>#3A1614<br>#FF9A92</span>
+        </div>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: start">
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div class="list">
+          <div class="lrow" style="min-height: 48px"><span class="eyebrow" style="flex: 1">Order status</span><span class="eyebrow" style="width: 150px">English</span><span class="eyebrow" style="width: 170px">Amharic</span></div>
+          <sc-for list="{{orderStatuses}}" as="r" hint-placeholder-count="8">
+            <div class="lrow" style="min-height: 56px">
+              <span class="foot muted" style="flex: 1; font-family: ui-monospace, Menlo, monospace">{{r.key}}</span>
+              <span style="width: 150px"><span class="{{r.cls}}">{{r.en}}</span></span>
+              <span style="width: 170px" lang="am"><span class="{{r.cls}}">{{r.am}}</span></span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 24px">
+        <div class="list">
+          <div class="lrow" style="min-height: 48px"><span class="eyebrow" style="flex: 1">Payout status</span><span class="eyebrow" style="width: 170px">English</span><span class="eyebrow" style="width: 170px">Amharic</span></div>
+          <sc-for list="{{payoutStatuses}}" as="r" hint-placeholder-count="4">
+            <div class="lrow" style="min-height: 56px">
+              <span class="foot muted" style="flex: 1; font-family: ui-monospace, Menlo, monospace">{{r.key}}</span>
+              <span style="width: 170px"><span class="{{r.cls}}">{{r.en}}</span></span>
+              <span style="width: 170px" lang="am"><span class="{{r.cls}}">{{r.am}}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="list">
+          <div class="lrow" style="min-height: 48px"><span class="eyebrow" style="flex: 1">Product status</span><span class="eyebrow" style="width: 170px">English</span><span class="eyebrow" style="width: 170px">Amharic</span></div>
+          <sc-for list="{{productStatuses}}" as="r" hint-placeholder-count="3">
+            <div class="lrow" style="min-height: 56px">
+              <span class="foot muted" style="flex: 1; font-family: ui-monospace, Menlo, monospace">{{r.key}}</span>
+              <span style="width: 170px"><span class="{{r.cls}}">{{r.en}}</span></span>
+              <span style="width: 170px" lang="am"><span class="{{r.cls}}">{{r.am}}</span></span>
+            </div>
+          </sc-for>
+        </div>
+        <div class="list">
+          <div class="lrow" style="min-height: 48px"><span class="eyebrow" style="flex: 1">Verification</span><span class="eyebrow" style="width: 340px">Label</span></div>
+          <div class="lrow" style="min-height: 56px"><span class="foot muted" style="flex: 1; font-family: ui-monospace, Menlo, monospace">shop.verified</span><span style="width: 340px; display: flex; gap: 8px"><span class="verified"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.2 2.3 2.3 4.7-4.8"></path></svg>Verified shop</span></span></div>
+          <div class="lrow" style="min-height: 56px"><span class="foot muted" style="flex: 1; font-family: ui-monospace, Menlo, monospace">kyc</span><span style="width: 340px; display: flex; flex-wrap: wrap; gap: 8px"><span class="badge">ID not sent</span><span class="badge b-info">ID in review</span><span class="badge b-success">ID verified</span><span class="badge b-danger">ID rejected</span></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px">
+      <h2 class="t1">Type · Latin</h2>
+      <p class="sub faint">Inter · fallback -apple-system, Segoe UI, Roboto</p>
+    </div>
+    <div style="display: flex; flex-direction: column">
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Display</span><span class="foot muted num">40/44 · desktop 56/60 · 700 · −2.8%</span></div>
+        <p class="display">Sell online. Get paid safely.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Title 1</span><span class="foot muted num">28/34 · desktop 34/40 · 700 · −2.2%</span></div>
+        <p class="t1">Habesha Kemis</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Title 2</span><span class="foot muted num">22/28 · 600 · −1.6%</span></div>
+        <p class="t2">Order #3eb05c7c</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Title 3 · card title 17</span><span class="foot muted num">18/24 · 600 · −1%</span></div>
+        <p class="t3">Delivery address</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Body</span><span class="foot muted num">16/24 · 400 · inputs and buttons</span></div>
+        <p class="body">Your payment is held until you confirm you received the item.</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Callout</span><span class="foot muted num">15/22 · 400 / 600 · money rows</span></div>
+        <p class="callout num">Delivery 150.00 ETB · Free over 3,000.00 ETB</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Subhead</span><span class="foot muted num">14/20 · 500 / 600 · labels</span></div>
+        <p class="sub strong">Phone or email</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Footnote</span><span class="foot muted num">13/18 · 400 / 600 · hints, badges</span></div>
+        <p class="foot num">Placed 22 Oct 2026, 13:37</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); align-items: baseline">
+        <div class="spec"><span class="sub strong">Caption</span><span class="foot muted num">12/16 · 500 · tab labels only</span></div>
+        <p class="cap">Overview · Products · Orders · Wallet · Settings</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px" lang="am">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 24px" lang="en">
+      <h2 class="t1">Type · Ethiopic</h2>
+      <p class="sub faint">Noto Sans Ethiopic · taller lines, letter-spacing 0, allow ~25% more width</p>
+    </div>
+    <div style="display: flex; flex-direction: column">
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Display</span><span class="foot muted num">36/50 · desktop 44/60 · 700</span></div>
+        <p class="display">በመስመር ላይ ይሽጡ። በሰላም ይከፈሉ።</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Title 1</span><span class="foot muted num">26/38 · desktop 30/44 · 700</span></div>
+        <p class="t1">የሐበሻ ቀሚስ</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Title 2</span><span class="foot muted num">21/32 · 600</span></div>
+        <p class="t2">ትዕዛዝ #3eb05c7c</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Title 3</span><span class="foot muted num">17/28 · 600</span></div>
+        <p class="t3">የማድረሻ አድራሻ</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Body</span><span class="foot muted num">16/28 · 400</span></div>
+        <p class="body">ዕቃውን መቀበልዎን እስኪያረጋግጡ ድረስ ክፍያዎ በጥንቃቄ ይቆያል።</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Callout</span><span class="foot muted num">15/26 · 400 / 600</span></div>
+        <p class="callout num">ማድረሻ 150.00 ብር · ከ3,000.00 ብር በላይ ነጻ</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Subhead</span><span class="foot muted num">14/24 · 600 · labels</span></div>
+        <p class="sub strong">ስልክ ወይም ኢሜይል</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Footnote</span><span class="foot muted num">13/22 · 400 / 600</span></div>
+        <p class="foot num">የታዘዘበት 22 Oct 2026, 13:37</p>
+      </div>
+      <div style="display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 32px; padding: 24px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); align-items: baseline">
+        <div class="spec" lang="en"><span class="sub strong">Caption</span><span class="foot muted num">12/20 · 500</span></div>
+        <p class="cap">አጠቃላይ · ምርቶች · ትዕዛዞች · ቦርሳ · ቅንብሮች</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 48px; align-items: start">
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <h2 class="t2">Spacing</h2>
+      <div style="display: flex; flex-direction: column; gap: 12px">
+        <sc-for list="{{space}}" as="sp" hint-placeholder-count="11">
+          <div style="display: flex; align-items: center; gap: 16px">
+            <span class="foot muted num" style="width: 32px; text-align: right">{{sp.v}}</span>
+            <span style="height: 12px; border-radius: 3px; background: var(--ink); width: {{sp.w}}"></span>
+          </div>
+        </sc-for>
+      </div>
+      <p class="foot faint">Phone gutter 16 · desktop gutter 32 · content max 1100</p>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <h2 class="t2">Radius</h2>
+      <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px">
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 8px"></div><span class="foot muted">8 · thumbs</span></div>
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 12px"></div><span class="foot muted">12 · inputs</span></div>
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 14px"></div><span class="foot muted">14 · chips</span></div>
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 20px"></div><span class="foot muted">20 · cards</span></div>
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 28px"></div><span class="foot muted">28 · gallery</span></div>
+        <div class="spec"><div style="height: 72px; background: var(--bg-2); border-radius: 999px"></div><span class="foot muted">pill · buttons</span></div>
+      </div>
+    </div>
+    <div style="display: flex; flex-direction: column; gap: 24px">
+      <h2 class="t2">Elevation</h2>
+      <div style="display: flex; flex-direction: column; gap: 20px; padding: 24px; background: var(--bg-2); border-radius: 20px">
+        <div style="height: 64px; border-radius: 14px; background: var(--surface); display: flex; align-items: center; padding: 0 16px"><span class="foot muted">0 · flat — default. Surfaces separate by fill.</span></div>
+        <div style="height: 64px; border-radius: 14px; background: var(--surface); box-shadow: var(--sh-1); display: flex; align-items: center; padding: 0 16px"><span class="foot muted">1 · active segment</span></div>
+        <div style="height: 64px; border-radius: 14px; background: var(--surface); box-shadow: var(--sh-2); display: flex; align-items: center; padding: 0 16px"><span class="foot muted">2 · menus and popovers</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="display: flex; flex-direction: column; gap: 32px">
+    <h2 class="t1">Formats</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px">
+      <div class="card" style="padding: 28px; gap: 14px">
+        <p class="eyebrow">Money · right-aligned, tabular</p>
+        <div class="mrows">
+          <div class="mrow"><span>English</span><span>2,525.00 ETB</span></div>
+          <div class="mrow" lang="am"><span>አማርኛ</span><span>2,525.00 ብር</span></div>
+          <div class="mrow"><span>Negative (real minus)</span><span>−125.00 ETB</span></div>
+        </div>
+      </div>
+      <div class="card" style="padding: 28px; gap: 14px">
+        <p class="eyebrow">Phone · tap to call</p>
+        <div class="mrows">
+          <div class="mrow"><span>Display</span><span>0911 234 567</span></div>
+          <div class="mrow"><span>Input</span><span>type=tel · inputmode=tel</span></div>
+          <div class="mrow"><span>Link</span><span>tel:+251911234567</span></div>
+        </div>
+      </div>
+      <div class="card" style="padding: 28px; gap: 14px">
+        <p class="eyebrow">Dates · Addis Ababa time</p>
+        <div class="mrows">
+          <div class="mrow"><span>Date and time</span><span>22 Oct 2026, 13:37</span></div>
+          <div class="mrow"><span>Order ID</span><span>#3eb05c7c</span></div>
+          <div class="mrow"><span>Page count</span><span>Page 2 of 5</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":3200}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const b = (tone) => 'badge' + (tone === 'neutral' ? '' : ' b-' + tone);
+    return {
+      light: [
+        { name: 'bg', hex: '#FFFFFF', use: 'Page' },
+        { name: 'bg-2', hex: '#F4F4F6', use: 'Cards, lists, images' },
+        { name: 'bg-3', hex: '#EBEBEF', use: 'Pressed, hover' },
+        { name: 'surface', hex: '#FFFFFF', use: 'Inputs on cards' },
+        { name: 'ink', hex: '#111113', use: 'Text, primary button' },
+        { name: 'ink-2', hex: '#55555C', use: 'Secondary text' },
+        { name: 'ink-3', hex: '#6B6B73', use: 'Hints, captions' },
+        { name: 'line', hex: '#E4E4E9', use: 'Hairlines' },
+        { name: 'field', hex: '#8A8A93', use: 'Input borders, 3:1' },
+        { name: 'accent', hex: '#0A7B50', use: 'Links, focus, progress' },
+        { name: 'accent-soft', hex: '#E7F4EC', use: 'Buyer protection' },
+        { name: 'hl', hex: '#FFF7E8', use: 'Needs action row' }
+      ],
+      dark: [
+        { name: 'bg', hex: '#0B0B0C', use: 'Page' },
+        { name: 'bg-2', hex: '#1C1C1F', use: 'Cards, lists, images' },
+        { name: 'bg-3', hex: '#2A2A2E', use: 'Pressed, hover' },
+        { name: 'surface', hex: '#141416', use: 'Inputs on cards' },
+        { name: 'ink', hex: '#F5F5F7', use: 'Text, primary button' },
+        { name: 'ink-2', hex: '#A8A8B0', use: 'Secondary text' },
+        { name: 'ink-3', hex: '#8E8E96', use: 'Hints, captions' },
+        { name: 'line', hex: '#2C2C31', use: 'Hairlines' },
+        { name: 'field', hex: '#6E6E76', use: 'Input borders, 3:1' },
+        { name: 'accent', hex: '#3CCB85', use: 'Links, focus, progress' },
+        { name: 'accent-soft', hex: '#0F2A1D', use: 'Buyer protection' },
+        { name: 'hl', hex: '#2A2210', use: 'Needs action row' }
+      ],
+      orderStatuses: [
+        { key: 'pending_payment', en: 'Awaiting payment', am: 'ክፍያ በመጠበቅ ላይ', cls: b('neutral') },
+        { key: 'paid', en: 'Paid', am: 'ተከፍሏል', cls: b('info') },
+        { key: 'processing', en: 'Preparing', am: 'በዝግጅት ላይ', cls: b('info') },
+        { key: 'shipped', en: 'Shipped', am: 'ተልኳል', cls: b('info') },
+        { key: 'delivered', en: 'Delivered', am: 'ደርሷል', cls: b('success') },
+        { key: 'disputed', en: 'In dispute', am: 'በቅሬታ ላይ', cls: b('warning') },
+        { key: 'cancelled', en: 'Cancelled', am: 'ተሰርዟል', cls: b('neutral') },
+        { key: 'refunded', en: 'Refunded', am: 'ገንዘቡ ተመልሷል', cls: b('neutral') }
+      ],
+      payoutStatuses: [
+        { key: 'pending', en: 'Waiting for review', am: 'ግምገማ በመጠበቅ ላይ', cls: b('warning') },
+        { key: 'processing', en: 'Sending', am: 'በመላክ ላይ', cls: b('info') },
+        { key: 'completed', en: 'Sent', am: 'ተልኳል', cls: b('success') },
+        { key: 'failed', en: 'Failed', am: 'አልተሳካም', cls: b('danger') }
+      ],
+      productStatuses: [
+        { key: 'active', en: 'Active', am: 'ንቁ', cls: b('success') },
+        { key: 'draft', en: 'Draft', am: 'ረቂቅ', cls: b('neutral') },
+        { key: 'archived', en: 'Archived', am: 'በማህደር', cls: b('neutral') }
+      ],
+      space: [4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 96].map((v) => ({ v: v, w: (v * 3) + 'px' }))
+    };
+  }
+}
+</script>
+</body>
+</html>

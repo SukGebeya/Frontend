@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Wallet</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="seller" cart="0" active="shop" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap shell">
+      <div class="slot"><dc-import name="SellerNav" active="wallet" theme="{{theme}}" hint-size="100%,124px"></dc-import></div>
+
+      <div style="display: flex; flex-direction: column; gap: 24px; min-width: 0">
+        <h1 class="t1">Wallet</h1>
+
+        <sc-if value="{{requested}}" hint-placeholder-val="{{false}}">
+          <div class="alert alert-success" role="status">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.2 2.3 2.3 4.7-4.8"></path></svg>
+            <div class="alert-b"><strong>Payout requested. It is sent after review.</strong></div>
+          </div>
+        </sc-if>
+        <sc-if value="{{hasError}}" hint-placeholder-val="{{false}}">
+          <div class="alert alert-error" role="alert">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m9 9 6 6M15 9l-6 6"></path></svg>
+            <div class="alert-b"><strong>{{errorTitle}}</strong><span>{{errorText}}</span></div>
+          </div>
+        </sc-if>
+
+        <div class="stats three">
+          <div class="stat hi span-sm"><span class="stat-l">Available to withdraw</span><span class="stat-v">1,525.00<small>ETB</small></span><span class="stat-s">Wallet balance minus held payouts</span></div>
+          <div class="stat"><span class="stat-l">Held for payouts</span><span class="stat-v">1,000.00<small>ETB</small></span><span class="stat-s">Waiting for review</span></div>
+          <div class="stat"><span class="stat-l">Wallet balance</span><span class="stat-v">2,525.00<small>ETB</small></span></div>
+        </div>
+
+        <div class="split half" style="gap: 16px">
+          <section class="card" aria-labelledby="po-h">
+            <div style="display: flex; flex-direction: column; gap: 4px">
+              <h2 class="card-t" id="po-h">Request payout</h2>
+              <p class="foot muted">Gebeya reviews each payout before sending it.</p>
+            </div>
+
+            <sc-if value="{{locked}}" hint-placeholder-val="{{false}}">
+              <div class="alert alert-info" role="status">
+                <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 11v5M12 7.5v.5"></path></svg>
+                <div class="alert-b"><strong>Payouts open after verification</strong><span>We need to verify your shop and your ID first. <a href="SellerOverview.dc.html">See your status</a></span></div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{unlocked}}" hint-placeholder-val="{{true}}">
+              <form class="form" method="post" action="#payout" style="gap: 18px">
+                <div class="{{amtCls}}">
+                  <label class="label" for="w-amt">Amount</label>
+                  <div class="affix"><input class="input num" id="w-amt" name="amount" type="text" inputmode="decimal" value="{{amount}}" aria-describedby="w-amt-h" aria-invalid="{{tooMuch}}"><span class="affix-end">ETB</span></div>
+                  <sc-if value="{{tooMuch}}" hint-placeholder-val="{{false}}"><p class="err" id="w-amt-h"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.5"></path></svg>You can withdraw up to 1,525.00 ETB.</p></sc-if>
+                  <sc-if value="{{amountOk}}" hint-placeholder-val="{{true}}"><p class="hint num" id="w-amt-h">Minimum 1.00 ETB · up to 1,525.00 ETB</p></sc-if>
+                </div>
+                <fieldset class="field">
+                  <legend class="label" style="margin-bottom: 8px">Send to</legend>
+                  <div class="rcards" style="gap: 8px">
+                    <label class="rcard" style="align-items: center"><input type="radio" name="method" value="telebirr" checked="checked"><span class="rcard-b"><span class="callout strong">Telebirr</span></span></label>
+                    <label class="rcard" style="align-items: center"><input type="radio" name="method" value="cbe_birr"><span class="rcard-b"><span class="callout strong">CBE Birr</span></span></label>
+                    <label class="rcard" style="align-items: center"><input type="radio" name="method" value="bank"><span class="rcard-b"><span class="callout strong">Bank transfer</span></span></label>
+                  </div>
+                </fieldset>
+                <div class="field">
+                  <label class="label" for="w-bank">Bank or wallet</label>
+                  <span class="select"><select class="input" id="w-bank" name="bank" aria-describedby="w-bank-h"><option selected="selected">Telebirr</option><option>CBE Birr</option><option>Commercial Bank of Ethiopia</option><option>Awash Bank</option><option>Dashen Bank</option><option>Bank of Abyssinia</option></select><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+                  <p class="hint" id="w-bank-h">List from Chapa, matched to your choice above.</p>
+                </div>
+                <div class="{{accCls}}">
+                  <label class="label" for="w-dest">Account or phone number</label>
+                  <input class="input num" id="w-dest" name="account" type="text" inputmode="numeric" value="{{account}}" aria-invalid="{{badAccount}}" aria-describedby="w-dest-e">
+                  <sc-if value="{{badAccount}}" hint-placeholder-val="{{false}}"><p class="err" id="w-dest-e"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.5"></path></svg>Chapa couldn’t find this account. Check the number.</p></sc-if>
+                </div>
+                <div class="field">
+                  <label class="label" for="w-holder">Account holder name</label>
+                  <input class="input" id="w-holder" name="holder" type="text" autocomplete="name" value="Tigist Bekele">
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">Request payout</button>
+              </form>
+            </sc-if>
+          </section>
+
+          <section class="card" aria-labelledby="pl-h" style="gap: 8px">
+            <div class="card-h" style="padding-bottom: 8px"><h2 class="card-t" id="pl-h">Payouts</h2><span class="foot muted">Last 10</span></div>
+            <sc-if value="{{hasData}}" hint-placeholder-val="{{true}}">
+              <sc-for list="{{payouts}}" as="p" hint-placeholder-count="4">
+                <div style="display: flex; flex-direction: column; gap: 2px; padding: 12px 0; border-top: 1px solid var(--line)">
+                  <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 28px">
+                    <span class="lrow-t num">{{p.amount}}</span>
+                    <span class="{{p.cls}}">{{p.status}}</span>
+                  </div>
+                  <span class="lrow-s num">{{p.to}}</span>
+                  <span class="lrow-s num">Requested {{p.date}}</span>
+                  <sc-if value="{{p.why}}" hint-placeholder-val="{{false}}"><span class="foot" style="color: var(--danger-fg); padding-top: 2px">{{p.why}}</span></sc-if>
+                </div>
+              </sc-for>
+            </sc-if>
+            <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+              <p class="sub muted" style="padding: 12px 0; border-top: 1px solid var(--line)">No payouts yet. When you request one, it shows here.</p>
+            </sc-if>
+          </section>
+        </div>
+
+        <section style="display: flex; flex-direction: column; gap: 14px" aria-labelledby="tx-h">
+          <h2 class="t3" id="tx-h">Transactions</h2>
+          <sc-if value="{{hasData}}" hint-placeholder-val="{{true}}">
+            <div class="list">
+              <sc-for list="{{tx}}" as="t" hint-placeholder-count="6">
+                <div class="lrow">
+                  <span class="thumb-s" style="width: 40px; height: 40px; border-radius: 50%; background: var(--bg)"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="{{t.icon}}"></path></svg></span>
+                  <div class="lrow-main">
+                    <span class="lrow-t">{{t.type}}</span>
+                    <span class="lrow-s num"><sc-if value="{{t.order}}" hint-placeholder-val="{{true}}"><a href="SellerOrderShipped.dc.html">Order #{{t.order}}</a> · </sc-if>{{t.meta}}</span>
+                  </div>
+                  <span class="lrow-amt">{{t.amount}}</span>
+                </div>
+              </sc-for>
+            </div>
+            <nav class="pager" aria-label="Pages">
+              <span class="btn btn-secondary btn-sm" aria-disabled="true"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 6-6 6 6 6"></path></svg>Previous</span>
+              <span class="pager-l">Page 1 of 4</span>
+              <a class="btn btn-secondary btn-sm" href="#page-2">Next<svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg></a>
+            </nav>
+          </sc-if>
+          <sc-if value="{{empty}}" hint-placeholder-val="{{false}}">
+            <div class="empty">
+              <span class="empty-i"><svg class="i" width="26" height="26" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2ZM3 10.5h18M15.5 15h2.5"></path></svg></span>
+              <h3 class="t3">No transactions yet</h3>
+              <p class="sub muted">Money from delivered orders shows up here.</p>
+            </div>
+          </sc-if>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"verified":{"editor":"boolean","default":true},"notice":{"editor":"enum","options":["none","payout requested","amount too high","invalid account"],"default":"none"},"empty":{"editor":"boolean","default":false},"$preview":{"width":360,"height":2800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const v = this.props.verified;
+    const verified = v === undefined ? true : (v === true || v === 'true');
+    const n = this.props.notice ?? 'none';
+    const empty = this.props.empty === true || this.props.empty === 'true';
+    const tooMuch = n === 'amount too high';
+    const badAccount = n === 'invalid account';
+    const tone = { 'Waiting for review': ' b-warning', Sending: ' b-info', Sent: ' b-success', Failed: ' b-danger' };
+    const payouts = [
+      { amount: '1,000.00 ETB', to: 'Telebirr · 0912 345 678', date: '22 Oct 2026, 09:30', status: 'Waiting for review' },
+      { amount: '1,290.00 ETB', to: 'Telebirr · 0912 345 678', date: '19 Oct 2026, 16:40', status: 'Sent' },
+      { amount: '600.00 ETB', to: 'CBE Birr · 0912 345 678', date: '12 Oct 2026, 11:15', status: 'Failed', why: 'The account name didn’t match. The money is back in your wallet.' },
+      { amount: '2,100.00 ETB', to: 'Commercial Bank of Ethiopia · 1000 2345 6789', date: '5 Oct 2026, 14:02', status: 'Sent' }
+    ];
+    const IN = 'M12 19V5M6 13l6 6 6-6';
+    const OUT = 'M12 5v14M6 11l6-6 6 6';
+    const tx = [
+      { type: 'Payout', order: '', meta: 'Telebirr · 19 Oct 2026, 16:40', amount: '−1,290.00 ETB', icon: OUT },
+      { type: 'Sale', order: '7f21a9b3', meta: '18 Oct 2026, 18:02', amount: '+2,525.00 ETB', icon: IN },
+      { type: 'Sale', order: '2c8e5f41', meta: '17 Oct 2026, 12:20', amount: '+1,290.00 ETB', icon: IN },
+      { type: 'Chargeback', order: '9e0a4b77', meta: '14 Oct 2026, 09:48', amount: '−1,330.00 ETB', icon: OUT },
+      { type: 'Refund', order: '4d1a6c25', meta: '12 Oct 2026, 10:05', amount: '−957.50 ETB', icon: OUT },
+      { type: 'Sale', order: '4d1a6c25', meta: '10 Oct 2026, 15:47', amount: '+957.50 ETB', icon: IN }
+    ];
+    return {
+      theme: this.props.theme ?? 'light',
+      locked: !verified,
+      unlocked: verified,
+      requested: n === 'payout requested',
+      hasError: tooMuch || badAccount,
+      errorTitle: tooMuch ? 'That’s more than you can withdraw' : 'We couldn’t check that account',
+      errorText: tooMuch ? 'Lower the amount and try again.' : 'Fix the account number and try again.',
+      tooMuch: tooMuch,
+      amountOk: !tooMuch,
+      amount: n === 'payout requested' ? '' : (tooMuch ? '2,000.00' : '1,525.00'),
+      amtCls: 'field' + (tooMuch ? ' is-invalid' : ''),
+      badAccount: badAccount,
+      account: n === 'payout requested' ? '' : (badAccount ? '0912 345' : '0912 345 678'),
+      accCls: 'field' + (badAccount ? ' is-invalid' : ''),
+      empty: empty,
+      hasData: !empty,
+      payouts: payouts.map((p) => Object.assign({ why: '' }, p, { cls: 'badge' + (tone[p.status] || '') })),
+      tx: tx
+    };
+  }
+}
+</script>
+</body>
+</html>

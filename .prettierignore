@@ -10,3 +10,6 @@ bun.lockb
 
 # Generated
 /src/lib/api/schema.ts
+
+# Design export from Claude Design, kept verbatim
+/docs/design/claude-design/

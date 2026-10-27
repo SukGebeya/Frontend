@@ -39,14 +39,3 @@ export function submitting({ reset = false } = {}) {
 		submit
 	};
 }
-
-/** Asks before submitting. `use:enhance` ignores preventDefault, so this cancels through its API. */
-export function confirmFirst(message: () => string, inner: SubmitFunction): SubmitFunction {
-	return (input) => {
-		if (!confirm(message())) {
-			input.cancel();
-			return;
-		}
-		return inner(input);
-	};
-}

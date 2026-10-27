@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Gebeya · Safe payments for social sellers</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="{{user}}" cart="0" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main" style="padding-top: 0">
+    <div class="wrap" style="display: flex; flex-direction: column; gap: 72px">
+
+      <section class="split half" style="align-items: center; padding-top: 40px; gap: 48px">
+        <div style="display: flex; flex-direction: column; gap: 20px">
+          <p class="eyebrow" style="color: var(--accent)">Safe payments for social sellers</p>
+          <h1 class="display">Sell online. Get paid safely.</h1>
+          <p class="t3 muted pretty" style="font-weight: 400; line-height: 28px">Share a product link on Telegram, TikTok or Instagram. Your buyer pays with Telebirr, CBE Birr or card, and Gebeya holds the money until the order arrives.</p>
+          <div class="actions" style="padding-top: 8px">
+            <sc-if value="{{isSeller}}" hint-placeholder-val="{{false}}">
+              <a class="btn btn-primary btn-fluid" href="SellerOverview.dc.html">Go to my shop</a>
+            </sc-if>
+            <sc-if value="{{notSeller}}" hint-placeholder-val="{{true}}">
+              <a class="btn btn-primary btn-fluid" href="SellerOnboarding.dc.html">Open a shop</a>
+            </sc-if>
+            <a class="btn btn-secondary btn-fluid" href="BuyerOrders.dc.html">Track my orders</a>
+          </div>
+        </div>
+
+        <figure aria-label="How an order looks on Gebeya" style="background: var(--bg-2); border-radius: var(--r-xl); padding: 20px; display: flex; flex-direction: column; gap: 12px">
+          <div style="background: var(--surface); border-radius: 20px; padding: 20px; display: flex; flex-direction: column; gap: 18px; box-shadow: var(--sh-1)">
+            <div style="display: flex; align-items: flex-start; gap: 12px">
+              <span class="trust-i"><svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.9 7 9.5 4.1-1.6 7-5.3 7-9.5V6l-7-3Z"></path><path d="m9 12 2.2 2.2L15.5 10"></path></svg></span>
+              <div style="display: flex; flex-direction: column; gap: 2px; min-width: 0">
+                <span class="foot muted">Payment held by Gebeya</span>
+                <span class="t3 num">2,650.00 ETB</span>
+                <span class="foot muted">Habesha Kemis · Tibeb Shop</span>
+              </div>
+            </div>
+            <ol class="steps" aria-label="Order progress">
+              <li class="step done"><span class="dot"><svg class="i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 3"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>Paid</li>
+              <li class="step done"><span class="dot"><svg class="i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 3"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>Preparing</li>
+              <li class="step now"><span class="dot"></span>Shipped</li>
+              <li class="step"><span class="dot"></span>Delivered</li>
+            </ol>
+          </div>
+          <div style="background: var(--surface); border-radius: 20px; padding: 16px 20px; display: flex; align-items: center; gap: 12px">
+            <span style="width: 36px; height: 36px; border-radius: 50%; background: var(--bg-2); display: grid; place-items: center; flex: none"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2ZM3 10.5h18M15.5 15h2.5"></path></svg></span>
+            <span class="sub muted pretty">When the buyer confirms delivery, the seller’s wallet gets the money, minus 5%.</span>
+          </div>
+        </figure>
+      </section>
+
+      <section style="display: flex; flex-direction: column; gap: 28px" aria-labelledby="how-h">
+        <h2 class="t1" id="how-h">How it works</h2>
+        <ol style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr)); gap: 16px">
+          <li class="card" style="gap: 12px">
+            <span class="num" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-size: 15px; font-weight: 700">1</span>
+            <h3 class="t3">Share a link</h3>
+            <p class="callout muted pretty">Add a product and post its link wherever you already sell.</p>
+          </li>
+          <li class="card" style="gap: 12px">
+            <span class="num" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-size: 15px; font-weight: 700">2</span>
+            <h3 class="t3">Buyer pays into escrow</h3>
+            <p class="callout muted pretty">They pay with Telebirr, CBE Birr or card. Gebeya holds the money.</p>
+          </li>
+          <li class="card" style="gap: 12px">
+            <span class="num" style="width: 32px; height: 32px; border-radius: 50%; background: var(--primary); color: var(--on-primary); display: grid; place-items: center; font-size: 15px; font-weight: 700">3</span>
+            <h3 class="t3">Get paid on delivery (minus 5%)</h3>
+            <p class="callout muted pretty">When the buyer confirms, the money moves to your wallet. Withdraw to mobile money or a bank.</p>
+          </li>
+        </ol>
+      </section>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" signed-in="{{signedIn}}" theme="{{theme}}" hint-size="100%,100px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"user":{"editor":"enum","options":["guest","buyer","seller"],"default":"guest"},"$preview":{"width":360,"height":1800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const user = this.props.user ?? 'guest';
+    return {
+      theme: this.props.theme ?? 'light',
+      user: user,
+      isSeller: user === 'seller',
+      notSeller: user !== 'seller',
+      signedIn: user === 'guest' ? 'false' : 'true'
+    };
+  }
+}
+</script>
+</body>
+</html>

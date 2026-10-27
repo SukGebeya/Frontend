@@ -1,7 +1,8 @@
 <script lang="ts">
+	import Icon from './Icon.svelte';
 	import { t } from '#lib/i18n/index.js';
 
-	let { url, label }: { url: string; label?: string } = $props();
+	let { url, label }: { url: string; label: string } = $props();
 	let copied = $state(false);
 	let timer: ReturnType<typeof setTimeout>;
 
@@ -25,27 +26,19 @@
 
 <div class="copy">
 	<input
+		class="input"
 		readonly
 		value={url}
-		aria-label={label ?? t('products.copyLink')}
+		aria-label={label}
 		onfocus={(e) => e.currentTarget.select()}
 	/>
-	<button type="button" class="btn sm primary" onclick={copy}>
+	<button
+		type="button"
+		class="btn {copied ? 'btn-secondary copied' : 'btn-primary'}"
+		onclick={copy}
+		aria-live="polite"
+	>
+		{#if copied}<Icon name="check" size={18} />{/if}
 		{copied ? t('products.copied') : t('products.copyLink')}
 	</button>
 </div>
-
-<style>
-	.copy {
-		display: flex;
-		gap: 8px;
-	}
-	input {
-		min-width: 0;
-		flex: 1;
-		font-size: 0.9rem;
-	}
-	button {
-		flex-shrink: 0;
-	}
-</style>

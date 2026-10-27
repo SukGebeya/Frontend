@@ -28,6 +28,12 @@ export function t(key: Key, vars?: Vars): string {
 	return translate(lang(), key, vars);
 }
 
+/** Splits a translation around one placeholder, so markup can wrap that value: `[before, after]`. */
+export function tSplit(key: Key, name: string, vars?: Vars): [string, string] {
+	const [before, after = ''] = t(key, { ...vars, [name]: '\u0000' }).split('\u0000');
+	return [before, after];
+}
+
 /** Keys built from API values (statuses, methods); falls back to the raw value if unknown. */
 export function tv(prefix: string, value: string): string {
 	const key = `${prefix}.${value}`;

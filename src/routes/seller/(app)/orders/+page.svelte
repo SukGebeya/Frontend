@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
+	import EmptyState from '#lib/components/EmptyState.svelte';
+	import Icon from '#lib/components/Icon.svelte';
 	import Pagination from '#lib/components/Pagination.svelte';
 	import StatusBadge from '#lib/components/StatusBadge.svelte';
 	import { formatDate, lang, t } from '#lib/i18n/index.js';
@@ -8,47 +10,60 @@
 
 	let { data }: PageProps = $props();
 	const orders = $derived(data.orders.items ?? []);
-	// Orders the seller has to move forward right now.
-	const needsAction = (status: string) => status === 'paid' || status === 'processing';
+	// What the seller has to do next, for orders waiting on them.
+	const next: Record<string, string> = $derived({
+		paid: t('sorders.accept'),
+		processing: t('sorders.readyToShip')
+	});
 </script>
 
-<svelte:head><title>{t('sorders.title')} · Gebeya</title></svelte:head>
+<svelte:head><title>{t('sorders.title')} · {t('brand.name')}</title></svelte:head>
 
-<h1>{t('sorders.title')}</h1>
-<p class="muted small">{t('sorders.paidOnDelivery')}</p>
+<div class="page-head">
+	<h1 class="t1">{t('sorders.title')}</h1>
+	<p class="sub muted pretty">{t('sorders.paidOnDelivery')}</p>
+	{#if data.actionRequired > 0}
+		<p class="sub need">
+			{data.actionRequired === 1
+				? t('sorders.needOne')
+				: t('sorders.needMany', { n: data.actionRequired })}
+		</p>
+	{/if}
+</div>
 
 {#if orders.length === 0}
-	<p class="card muted">{t('sorders.empty')}</p>
+	<EmptyState icon="receipt" title={t('sorders.emptyTitle')} text={t('sorders.emptyLead')}>
+		<a class="btn btn-secondary btn-sm" href={resolve('/seller/(app)/products')}
+			>{t('sorders.share')}</a
+		>
+	</EmptyState>
 {:else}
-	<ul class="list card">
+	<div class="list">
 		{#each orders as o (o.id)}
-			<li class:hot={needsAction(o.status)}>
-				<a href={resolve('/seller/(app)/orders/[id]', { id: o.id })} class="spread order">
-					<span class="stack-sm">
-						<span class="mono">#{o.id.slice(0, 8)}</span>
-						<span class="muted small">{formatDate(o.created_at, true)}</span>
-					</span>
-					<span class="stack-sm end">
-						<span class="amount">{formatMoney(o.total_cents, lang())}</span>
-						<StatusBadge status={o.status} />
-					</span>
-				</a>
-			</li>
+			<a
+				class="lrow"
+				class:hl={!!next[o.status]}
+				href={resolve('/seller/(app)/orders/[id]', { id: o.id })}
+			>
+				<div class="lrow-main">
+					<span class="lrow-t num">#{o.id.slice(0, 8)}</span>
+					<span class="lrow-s num">{formatDate(o.created_at, true)}</span>
+					{#if next[o.status]}<span class="foot need">{next[o.status]}</span>{/if}
+				</div>
+				<div class="lrow-end">
+					<span class="lrow-amt">{formatMoney(o.total_cents, lang())}</span>
+					<StatusBadge status={o.status} />
+				</div>
+				<Icon name="chevron-right" size={18} class="chev" />
+			</a>
 		{/each}
-	</ul>
+	</div>
 	<Pagination page={data.orders.page} pages={data.orders.total_pages} />
 {/if}
 
 <style>
-	.order {
-		color: var(--text);
-		text-decoration: none;
-	}
-	.end {
-		align-items: flex-end;
-	}
-	li.hot {
-		box-shadow: inset 3px 0 0 var(--gold);
-		padding-left: 10px;
+	.need {
+		color: var(--warning-fg);
+		font-weight: 600;
 	}
 </style>

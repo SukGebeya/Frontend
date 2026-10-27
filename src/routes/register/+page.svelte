@@ -4,6 +4,7 @@
 	import { page } from '$app/state';
 	import Field from '#lib/components/Field.svelte';
 	import FormMessage from '#lib/components/FormMessage.svelte';
+	import Submit from '#lib/components/Submit.svelte';
 	import { formState, submitting } from '#lib/forms.svelte.js';
 	import { t } from '#lib/i18n/index.js';
 	import { PHONE_PATTERN } from '#lib/phone.js';
@@ -15,14 +16,21 @@
 	const next = $derived(page.url.searchParams.get('next') ?? '');
 </script>
 
-<svelte:head><title>{t('auth.registerTitle')} · Gebeya</title></svelte:head>
+<svelte:head><title>{t('auth.registerTitle')} · {t('brand.name')}</title></svelte:head>
 
-<section class="card stack narrow">
-	<h1>{t('auth.registerTitle')}</h1>
+<div class="narrow auth">
+	<div class="auth-head">
+		<span class="logo-m lg" aria-hidden="true">ገ</span>
+		<h1 class="t1">{t('auth.registerTitle')}</h1>
+		<p class="body muted pretty">{t('auth.registerLead')}</p>
+	</div>
+
 	<FormMessage form={f} />
-	<form method="POST" class="stack" use:enhance={s.submit}>
+
+	<form method="POST" class="form" use:enhance={s.submit}>
 		<Field id="phone" label={t('auth.phone')} hint={t('auth.phoneHint')} error={f.fields?.phone}>
 			<input
+				class="input num"
 				id="phone"
 				name="phone"
 				type="tel"
@@ -34,12 +42,14 @@
 				defaultValue={f.values?.phone ?? ''}
 			/>
 		</Field>
-		<Field id="email" label={t('auth.email')} error={f.fields?.email}>
+		<Field id="email" label={t('auth.email')} optional error={f.fields?.email}>
 			<input
+				class="input"
 				id="email"
 				name="email"
 				type="email"
 				autocomplete="email"
+				placeholder="you@example.com"
 				defaultValue={f.values?.email ?? ''}
 			/>
 		</Field>
@@ -50,6 +60,7 @@
 			error={f.fields?.password}
 		>
 			<input
+				class="input"
 				id="password"
 				name="password"
 				type="password"
@@ -58,17 +69,12 @@
 				required
 			/>
 		</Field>
-		<button class="btn primary block" disabled={s.busy}>{t('auth.register')}</button>
+		<Submit busy={s.busy} class="btn-primary btn-block">{t('auth.register')}</Submit>
 	</form>
-	<p class="small muted">
-		{t('auth.haveAccount')}
-		<a href={resolve(`/login?next=${encodeURIComponent(next)}`)}>{t('auth.login')}</a>
-	</p>
-</section>
 
-<style>
-	.narrow {
-		max-width: 26rem;
-		margin: 0 auto;
-	}
-</style>
+	<p class="sub muted center">
+		{t('auth.haveAccount')}
+		<a class="strong" href={resolve(`/login?next=${encodeURIComponent(next)}`)}>{t('auth.login')}</a
+		>
+	</p>
+</div>

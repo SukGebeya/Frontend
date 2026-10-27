@@ -2,8 +2,9 @@ import { execFileSync } from 'node:child_process';
 import { expect, test, type Browser, type Page } from '@playwright/test';
 
 // Walks the same money flow as the API's scripts/e2e-money-flow.sh, through the UI:
-// a seller opens a shop and lists a product, a buyer pays through the shared link,
-// the seller ships, the buyer confirms, and the seller's wallet is credited.
+// a seller opens a shop and lists a product, a buyer pays with Telebirr on the API's
+// mock Chapa checkout, the seller ships, the buyer confirms, the seller's wallet is
+// credited, and payouts go out (one is sent, one fails at the provider).
 
 const API = process.env.API_URL ?? 'http://localhost:8080/api/v1';
 const OTP = process.env.OTP_DEV_CODE ?? '123456';
@@ -75,6 +76,8 @@ const login = (identifier: string) =>
 	});
 
 test('seller lists a product, buyer pays through the link, seller is paid', async ({ browser }) => {
+	// Each payout waits for the API's payout job to re-check the transfer.
+	test.setTimeout(240_000);
 	const sellerPhone = randomPhone();
 	const buyerPhone = randomPhone();
 	const seller = await newPage(browser);
@@ -102,23 +105,23 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 		await seller.getByLabel('Shop name').fill(`Tibeb Shop ${run}`);
 		await seller.getByLabel('Delivery fee (ETB)').fill('150');
 		await seller.getByRole('button', { name: 'Open shop' }).click();
-		await expect(seller.getByText('Your shop is not verified yet')).toBeVisible();
+		await expect(seller.getByText('Payouts open after verification')).toBeVisible();
 		await shot(seller, 'seller-02-dashboard-new');
 	});
 
 	let productLink = '';
 	await test.step('seller lists a product and copies its link', async () => {
 		await seller.getByRole('link', { name: 'Products' }).click();
-		await seller.getByRole('link', { name: '+ New product' }).click();
+		await seller.getByRole('link', { name: 'New product' }).first().click();
 		await shot(seller, 'seller-04-product-new');
 		await seller.getByLabel('Product name').fill(`Habesha Kemis ${run}`);
 		await seller.getByLabel('Price (ETB)').fill('2,500');
 		await seller.getByLabel('In stock').fill('10');
 		await seller.getByLabel('Option name').fill('Size M');
-		await seller.getByLabel('Image link (https)').fill('https://cdn.example.com/kemis.jpg');
+		await seller.getByLabel('Image link').fill('https://cdn.example.com/kemis.jpg');
 		await seller.getByRole('button', { name: 'Create product' }).click();
-		await expect(seller.getByText('Share this link in your posts and chats:')).toBeVisible();
-		productLink = await seller.getByRole('textbox', { name: 'Copy link' }).inputValue();
+		await expect(seller.getByText('Your product is live. Share the link.')).toBeVisible();
+		productLink = await seller.getByRole('textbox', { name: 'Product link' }).inputValue();
 		expect(productLink).toMatch(/\/p\/[a-z0-9-]+$/);
 		await shot(seller, 'seller-05-product-edit');
 		if (SHOTS) {
@@ -141,7 +144,10 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 		await expect(buyer.getByText('150.00 ETB')).toBeVisible();
 		await shot(buyer, 'buyer-01-product-link');
 		if (SHOTS) {
-			await buyer.getByRole('link', { name: `Tibeb Shop ${run}` }).click();
+			await buyer
+				.getByRole('link', { name: `Tibeb Shop ${run}` })
+				.first()
+				.click();
 			await shot(buyer, 'buyer-02-shop');
 			await buyer.goto(productLink);
 			await buyer.getByRole('button', { name: 'Add to cart' }).click();
@@ -158,7 +164,9 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 		await buyer.getByRole('link', { name: 'Create account' }).click();
 		await signUp(buyer, buyerPhone);
 		await expect(buyer).toHaveURL(/\/checkout$/);
-		await expect(buyer.getByText(`Habesha Kemis ${run} · Size M × 1`)).toBeVisible();
+		const summary = buyer.getByRole('complementary', { name: 'Order summary' });
+		await expect(summary.getByText(`Habesha Kemis ${run}`)).toBeVisible();
+		await expect(summary.getByText('Size M × 1')).toBeVisible();
 		await shot(buyer, 'buyer-04-checkout-new-address');
 
 		await buyer.getByLabel('Full name').fill('Abebe Bikila');
@@ -170,7 +178,11 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 		await shot(buyer, 'buyer-05-checkout');
 
 		await buyer.getByRole('button', { name: 'Continue to payment' }).click();
-		// The mock Chapa sends the buyer straight back to the return URL.
+		// The API's mock Chapa hosted checkout, filled in with the buyer's number.
+		await expect(buyer).toHaveURL(/\/mock-chapa\/checkout\//);
+		await expect(buyer.getByLabel('Mobile money number')).toHaveValue(buyerPhone);
+		await buyer.getByRole('radio', { name: 'Telebirr' }).check();
+		await buyer.getByRole('button', { name: 'Pay 2,650.00 ETB' }).click();
 		await expect(buyer.getByRole('heading', { name: 'Payment received' })).toBeVisible();
 		// The return page reads the order from a cookie it then clears, so the Amharic shot needs ?order=.
 		await shot(buyer, 'buyer-06-payment-complete', { amharic: false });
@@ -212,17 +224,28 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 		await buyer.reload();
 		await shot(buyer, 'buyer-08-order-shipped');
 		if (SHOTS) {
-			// The dispute form opens client-side, so retry until the page has hydrated.
-			await expect(async () => {
-				await buyer.getByRole('button', { name: 'Report a problem' }).click();
-				await expect(buyer.getByLabel('What went wrong?')).toBeVisible({ timeout: 1000 });
-			}).toPass();
+			// "Report a problem" is a <details> disclosure, so it opens without JavaScript.
+			await buyer.getByText('Report a problem').click();
+			await expect(buyer.getByLabel('What went wrong?')).toBeVisible();
 			await shot(buyer, 'buyer-09-order-dispute-form', { amharic: false });
 			await buyer.reload();
 		}
 		await buyer.getByRole('button', { name: 'I received my order' }).click();
 		await expect(buyer.getByText('Delivered', { exact: true }).first()).toBeVisible();
 		await shot(buyer, 'buyer-10-order-delivered');
+	});
+
+	await test.step('a declined payment cancels the second order', async () => {
+		await buyer.goto(productLink);
+		await buyer.getByRole('button', { name: 'Buy now' }).click();
+		await expect(buyer).toHaveURL(/\/checkout$/);
+		await expect(buyer.getByRole('radio', { name: /Abebe Bikila/ })).toBeChecked();
+		await buyer.getByRole('button', { name: 'Continue to payment' }).click();
+		await expect(buyer).toHaveURL(/\/mock-chapa\/checkout\//);
+		await buyer.getByRole('button', { name: 'Decline payment' }).click();
+		await expect(buyer.getByRole('heading', { name: 'Payment not completed' })).toBeVisible();
+		await buyer.getByRole('link', { name: 'View order' }).click();
+		await expect(buyer.getByText('Cancelled', { exact: true }).first()).toBeVisible();
 	});
 
 	await test.step('settlement credits the seller wallet', async () => {
@@ -232,6 +255,25 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 			await expect(seller.getByText('+2,525.00 ETB')).toBeVisible({ timeout: 1000 });
 		}).toPass({ timeout: 30_000 });
 	});
+
+	let admin = '';
+	let sellerToken = '';
+	const payouts = seller.getByRole('region', { name: 'Payouts' });
+	// Approval is an admin action; the payout job then sends it through Chapa and re-checks
+	// it after PAYOUT_RECHECK_INTERVAL (10s in the API's .env.example).
+	const approveLatestPayout = async () => {
+		const list = await api<{ items: { id: string }[] }>('/merchant/wallet/payouts', {
+			token: sellerToken
+		});
+		await api(`/admin/payouts/${list.items[0].id}/process`, { method: 'POST', token: admin });
+	};
+	const waitForPayout = async (status: string) =>
+		expect(async () => {
+			await seller.reload();
+			await expect(payouts.getByText(status, { exact: true }).first()).toBeVisible({
+				timeout: 1000
+			});
+		}).toPass({ timeout: 90_000 });
 
 	await test.step('verified seller requests a payout', async () => {
 		// KYC and shop verification are admin actions, done through the API as in the backend script.
@@ -251,11 +293,10 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 			'-qc',
 			`UPDATE users SET role='admin' WHERE phone='+251${adminPhone.slice(1)}'`
 		]);
-		const admin = (await login(adminPhone)).token.access_token;
+		admin = (await login(adminPhone)).token.access_token;
 		const sellerLogin = await login(sellerPhone);
-		const profile = await api<{ id: string }>('/merchant/profile', {
-			token: sellerLogin.token.access_token
-		});
+		sellerToken = sellerLogin.token.access_token;
+		const profile = await api<{ id: string }>('/merchant/profile', { token: sellerToken });
 		await api(`/admin/users/${sellerLogin.user.id}/kyc`, {
 			method: 'PUT',
 			token: admin,
@@ -282,7 +323,29 @@ test('seller lists a product, buyer pays through the link, seller is paid', asyn
 			await shot(seller, 'seller-02-dashboard');
 			await seller.goto('/seller/wallet');
 		}
-		// The language switch.
+	});
+
+	await test.step('the payout is sent to Telebirr', async () => {
+		await approveLatestPayout();
+		await waitForPayout('Sent');
+		await expect(seller.getByText('1,525.00 ETB').first()).toBeVisible();
+	});
+
+	await test.step('a payout the provider rejects goes back to the wallet', async () => {
+		await seller.getByLabel('Amount (ETB)').fill('500');
+		// The mock Chapa fails transfers to numbers ending in 0000.
+		await seller.getByLabel('Account or phone number').fill('0911110000');
+		await seller.getByLabel('Account holder name').fill('Tigist Bekele');
+		await seller.getByRole('button', { name: 'Request payout' }).click();
+		await expect(seller.getByText('Payout requested.')).toBeVisible();
+		await expect(seller.getByText('1,025.00 ETB').first()).toBeVisible();
+		await approveLatestPayout();
+		await waitForPayout('Failed');
+		await expect(payouts.getByText('transfer failed at provider')).toBeVisible();
+		await expect(seller.getByText('1,525.00 ETB').first()).toBeVisible();
+	});
+
+	await test.step('the language switch', async () => {
 		await seller.getByRole('button', { name: 'አማርኛ' }).click();
 		await expect(seller.getByRole('heading', { name: 'ቦርሳ' })).toBeVisible();
 		await buyer.goto(productLink);

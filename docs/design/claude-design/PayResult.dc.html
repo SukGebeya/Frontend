@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Payment result</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="buyer" cart="0" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main" style="display: flex; align-items: flex-start">
+    <div class="wrap">
+      <div class="narrow" style="display: flex; flex-direction: column; gap: 28px; padding-top: 24px; max-width: 460px">
+
+        <sc-if value="{{checking}}" hint-placeholder-val="{{false}}">
+          <div class="result" role="status" aria-live="polite">
+            <span class="result-i wait"><span class="spin lg" aria-hidden="true"></span></span>
+            <h1 class="t2">Checking your payment…</h1>
+            <p class="body muted pretty">Chapa hasn’t confirmed it yet. This usually takes a few seconds — keep this page open.</p>
+          </div>
+          <div class="actions" style="flex-direction: column; align-items: stretch">
+            <form method="get" action="#check" style="display: flex"><button class="btn btn-secondary btn-block" type="submit"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"></path><path d="M20 4v4h-4"></path></svg>Check again</button></form>
+            <a class="btn btn-link btn-block" href="BuyerOrderPaid.dc.html">View order</a>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{waiting}}" hint-placeholder-val="{{false}}">
+          <div class="result" role="status">
+            <span class="result-i wait"><svg class="i" width="32" height="32" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg></span>
+            <h1 class="t2">Still waiting for Chapa</h1>
+            <p class="body muted pretty">If you paid, it can take a minute to show here. You won’t be charged twice.</p>
+          </div>
+          <div class="actions" style="flex-direction: column; align-items: stretch">
+            <form method="get" action="#check" style="display: flex"><button class="btn btn-primary btn-block" type="submit"><svg class="i" width="18" height="18" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.3-5.6"></path><path d="M20 4v4h-4"></path></svg>Check again</button></form>
+            <a class="btn btn-secondary btn-block" href="BuyerOrderPaid.dc.html">View order</a>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{received}}" hint-placeholder-val="{{true}}">
+          <div class="result" role="status">
+            <span class="result-i ok"><svg class="i" width="36" height="36" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2.25"><path d="m5 12.5 4.5 4.5L19 7.5"></path></svg></span>
+            <p class="foot muted num">Order #3eb05c7c</p>
+            <h1 class="t1">Payment received</h1>
+            <p class="t2 num">2,650.00 ETB</p>
+          </div>
+          <div class="trust">
+            <span class="trust-i"><svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3 5 6v5.5c0 4.2 2.9 7.9 7 9.5 4.1-1.6 7-5.3 7-9.5V6l-7-3Z"></path><path d="m9 12 2.2 2.2L15.5 10"></path></svg></span>
+            <span class="trust-b"><span class="trust-t">Your money is safe</span><span class="trust-p">Your money is held safely until you confirm delivery.</span></span>
+          </div>
+          <section class="card" aria-labelledby="next-h" style="gap: 14px">
+            <h2 class="card-t" id="next-h">What happens next</h2>
+            <ol style="display: flex; flex-direction: column; gap: 12px">
+              <li style="display: flex; gap: 12px; align-items: flex-start"><span class="num" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-size: 13px; font-weight: 600">1</span><span class="callout">Tibeb Shop accepts and prepares your order.</span></li>
+              <li style="display: flex; gap: 12px; align-items: flex-start"><span class="num" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-size: 13px; font-weight: 600">2</span><span class="callout">You confirm when it arrives.</span></li>
+              <li style="display: flex; gap: 12px; align-items: flex-start"><span class="num" style="flex: none; width: 24px; height: 24px; border-radius: 50%; background: var(--bg); display: grid; place-items: center; font-size: 13px; font-weight: 600">3</span><span class="callout">Only then does Gebeya pay the seller.</span></li>
+            </ol>
+          </section>
+          <div class="actions" style="flex-direction: column; align-items: stretch">
+            <a class="btn btn-primary btn-block" href="BuyerOrderPaid.dc.html">View order</a>
+            <a class="btn btn-secondary btn-block" href="Home.dc.html">Go home</a>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{failed}}" hint-placeholder-val="{{false}}">
+          <div class="result" role="alert">
+            <span class="result-i bad"><svg class="i" width="32" height="32" viewBox="0 0 24 24" aria-hidden="true" style="stroke-width: 2"><path d="m7 7 10 10M17 7 7 17"></path></svg></span>
+            <p class="foot muted num">Order #3eb05c7c</p>
+            <h1 class="t2">Payment not completed</h1>
+            <p class="body muted pretty">No money was taken. You can order again whenever you’re ready.</p>
+          </div>
+          <div class="actions" style="flex-direction: column; align-items: stretch">
+            <a class="btn btn-primary btn-block" href="BuyerOrderPaid.dc.html">View order</a>
+            <a class="btn btn-secondary btn-block" href="Home.dc.html">Go home</a>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{unknown}}" hint-placeholder-val="{{false}}">
+          <div class="result" role="alert">
+            <span class="result-i unk"><svg class="i" width="34" height="34" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M9.6 9.3a2.5 2.5 0 0 1 4.8.9c0 1.7-2.4 2.1-2.4 3.6M12 17v.2"></path></svg></span>
+            <h1 class="t2">We can’t find this order</h1>
+            <p class="body muted pretty">The link may be old or mistyped. If you paid, the order is in My orders.</p>
+          </div>
+          <div class="actions" style="flex-direction: column; align-items: stretch">
+            <a class="btn btn-primary btn-block" href="BuyerOrders.dc.html">Track my orders</a>
+            <a class="btn btn-secondary btn-block" href="Home.dc.html">Go home</a>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"state":{"editor":"enum","options":["checking","waiting","received","failed","unknown"],"default":"received"},"$preview":{"width":360,"height":1100}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.props.state ?? 'received';
+    return {
+      theme: this.props.theme ?? 'light',
+      checking: s === 'checking',
+      waiting: s === 'waiting',
+      received: s === 'received',
+      failed: s === 'failed',
+      unknown: s === 'unknown'
+    };
+  }
+}
+</script>
+</body>
+</html>

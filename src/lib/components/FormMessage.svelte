@@ -7,7 +7,7 @@
 </script>
 
 {#if form.message}
-	<Alert tone="error">{form.message}</Alert>
+	<Alert tone="error" title={t('form.failed')}><span>{form.message}</span></Alert>
 {:else if form.notice}
-	<Alert tone="success">{t(form.notice)}</Alert>
+	<Alert tone="success" title={t(form.notice)} />
 {/if}

@@ -1,6 +1,8 @@
 # Gebeya design brief
 
-This document gives a designer (human or Claude Design) everything the web app does, so the visual design can be redone without losing any function. It describes **what each screen must contain and do**, not how it should look. The current look is a plain placeholder and should not be treated as a reference.
+> **The design made from this brief is in [`claude-design/`](claude-design/README.md), and the app now follows it.** This brief stays the functional spec: when a page gains or loses a field, action or state, update it here.
+
+This document gives a designer (human or Claude Design) everything the web app does, so the visual design can be redone without losing any function. It describes **what each screen must contain and do**, not how it should look.
 
 - Screenshots of every screen as it works today are in `docs/design/screens/` (phone width, English `.en.png` and Amharic `.am.png`). Use them to see **content and states**, not styling.
 - Regenerate them with the API running: `SCREENSHOT_DIR=$PWD/docs/design/screens PLAYWRIGHT_CHANNEL=chrome npm run test:e2e`.
@@ -86,12 +88,11 @@ Each entry lists what the screen shows, its actions, and its states. "Field: hin
   - **My orders** when logged in
   - **My shop** when the user is a seller
   - **Log in** when logged out; it returns to the current page afterwards
-  - **Cart**
+  - **Cart**, with a badge counting the items in it
   - the language switch, which shows the _other_ language's name: "አማርኛ" or "English"
+  - On phones, My orders and My shop move into a menu (a `<details>` element, so it opens without JS).
 - **Footer:** the tagline, plus **Log out** when logged in.
-- **Seller area:** adds the shop name and a tab bar: **Overview · Products · Orders · Wallet · Settings**.
-  - All five tabs must fit at 360 px in both languages. Today they fit just barely.
-  - A bottom navigation bar is a good alternative.
+- **Seller area:** adds the shop name, "Verified shop" or "Not verified yet", a **View shop** link and a tab bar: **Overview · Products · Orders · Wallet · Settings**. All five tabs must fit at 360 px in both languages.
 - **Messages:** form errors and success notices appear above the form. Per-field errors appear under the field.
 - **Errors and not found** [public-02-not-found]: a title ("Page not found" or "Something went wrong"), an optional message, and **Go home**.
 
@@ -192,12 +193,13 @@ Each entry lists what the screen shows, its actions, and its states. "Field: hin
 - Then the **Subtotal**, "The shop's delivery fee is added on the payment page.", and "Items are reserved for you until 29 Oct 2026, 13:37." (carts hold stock for 7 days).
 - **Checkout** button. Empty state: "Your cart is empty."
 - An order can contain items from **one shop only**. Mixing shops gives an error at checkout.
+- The design groups the cart under the shop's name and shows item photos, but the cart doesn't return the shop or images yet (a backend change), so lines show a placeholder icon.
 
 **Checkout `/checkout`** [buyer-04-checkout-new-address, buyer-05-checkout]
 
 - Requires login; logged-out buyers go to Log in and come back.
-- **Phone not verified:** a warning, "Verify your phone number before paying." with a **Verify now** link. The pay button is disabled until then.
-- **Order summary:** lines like "Habesha Kemis · Size M × 1 … 2,500.00 ETB", then the items total and the delivery-fee note.
+- **Phone not verified:** a warning, "Verify your phone to pay", with a **Verify now** link. The pay button is disabled until then.
+- **Order summary:** each line shows the product name, "Size M × 1" under it and the line total, then the items total and the delivery-fee note.
 - **Delivery address:**
   - **Saved addresses** are radio cards showing:
     - name and phone
@@ -235,7 +237,8 @@ Each entry lists what the screen shows, its actions, and its states. "Field: hin
 
 - **Title:** "Order #3eb05c7c", where the ID is the first 8 characters of the order's UUID. Below it, "Placed 22 Oct 2026, 13:37" and a **status badge**.
 - **Progress tracker:** Paid → Preparing → Shipped → Delivered. It is shown only for those four statuses; see section 6 for the rest.
-- **Items:** lines as "name · option × qty … line total". Then **Items**, **Delivery** and **Total**. Then the buyer's **note**, if any.
+- **Next step:** a card under the tracker with a title and lead for the status (e.g. "Payment received", "On its way") and that status's actions.
+- **Items:** each line shows the name, "option × qty" under it and the line total. Then **Items**, **Delivery** and **Total paid**. Then the buyer's **note**, if any.
 - **Deliver to:** name, phone (a tap-to-call link) and full address. Fallback: "The delivery address was removed."
 - **Shipment**, when the seller entered it: **Carrier**, **Tracking number**, **Estimated delivery**.
 - Actions by status:
@@ -246,14 +249,12 @@ Each entry lists what the screen shows, its actions, and its states. "Field: hin
   - `paid`: **Cancel order**, which gives a full refund
   - `processing` (the seller is preparing it): **Report a problem**
   - `shipped`:
-    - a highlighted box, "Confirm only when you have the item. The seller is paid when you confirm.", with **I received my order** (primary)
-    - "If you do nothing, delivery is confirmed automatically 7 days after shipping."
+    - a highlighted box, "Confirming releases your payment to the shop. If you don't confirm, it happens automatically 7 days after shipping, on 3 Nov 2026.", with **I received my order** (primary)
     - **Report a problem**
-  - **Report a problem** opens a form:
+  - **Report a problem** is a `<details>` disclosure holding the form:
     - "Your money stays held while Gebeya reviews the dispute."
     - **What went wrong?** (5–1000 characters)
     - **Open dispute** (danger) and **Cancel**
-    - this should be designed so it also works without JS, e.g. as an expandable section
   - `disputed`: a warning, "Dispute open: <reason>", with the same held-money line
   - `delivered`, `cancelled`, `refunded`: no actions
 
@@ -261,6 +262,7 @@ Each entry lists what the screen shows, its actions, and its states. "Field: hin
 
 - A list, newest first. Each row shows "#3eb05c7c", the date, the total and a status badge, and links to the order.
 - 20 per page. Empty state: "You have no orders yet."
+- The design shows the shop and items on each row (and the shop on the order page), but the API doesn't return them for buyers yet (a backend change).
 
 ### Seller
 
@@ -283,22 +285,22 @@ All seller pages need login. Until the user completes onboarding, every `/seller
 
 **Overview `/seller`** [seller-02-dashboard-new, seller-02-dashboard]
 
-- If the shop isn't verified, an info banner: "Your shop is not verified yet. You can sell now; payouts open once Gebeya verifies your shop and ID."
+- If the shop isn't verified, an info banner: "You can sell now. Payouts open after verification.", with badges for the shop and ID (KYC) checks.
 - Four figures:
   - **Available to withdraw**
   - **Wallet balance**, with "Held for payouts: 1,000.00 ETB" when a payout is pending
   - **Total sales**
   - **Orders waiting for you**: a count that links to Orders and should be highlighted when above 0
 - **Orders by status:** a status badge and count for each non-zero status.
-- **Your shop link:** the URL and a **Copy link** button.
+- **Share your shop:** the shop URL and a **Copy link** button.
 - How the money figures relate: wallet balance = everything credited and not yet paid out; available = balance minus payouts waiting to be sent. In the example: balance 2,525.00, held 1,000.00, available 1,525.00.
 
 **Products `/seller/products`** [seller-03-products]
 
-- **+ New product** button.
+- **New product** button.
 - A list of all products, including drafts and archived ones. Each row shows the name, last-updated date and a product status badge.
-- 20 per page. Empty state: "No products yet. Add your first one."
-- There are no thumbnails or prices in this list today; adding them would be a backend change, so flag it if the design wants them.
+- 20 per page. Empty state: "No products yet", with a **New product** button.
+- The design shows a thumbnail and price on each row, but the merchant products list doesn't return them yet (a backend change), so rows show a placeholder icon and no price.
 
 **New product `/seller/products/new`** [seller-04-product-new]
 
@@ -309,14 +311,14 @@ All seller pages need login. Until the user completes onboarding, every `/seller
   - **Price (ETB)**: accepts "2,500" or "2500.50"
   - **In stock**: default 1
   - **Option name**, hint "For example: Size M, 128 GB, Red"; defaults to "Standard"
-  - **Image link (https)**, hint "Paste a link to an image you have uploaded elsewhere."
+  - **Image link**, an https URL, hint "An https link to a photo you've already posted online. Photo upload is planned for later."
 - **Create product** button. The product is created as active, and the seller lands on the product editor.
 
 **Product editor `/seller/products/[id]`** [seller-05-product-edit]
 
 - **Header:** the product name and status badge.
 - **Share box**, highlighted right after creation:
-  - "Share this link in your posts and chats:", then the URL and **Copy link** (the button changes to "Copied")
+  - "Your product is live. Share the link.", then the URL and **Copy link** (the button changes to "Copied")
   - if the product isn't active: "Only active products can be opened by buyers."
   - with no options: a warning, "Add at least one option with a price and stock so buyers can order."
 - **Options and prices:**
@@ -332,17 +334,19 @@ All seller pages need login. Until the user completes onboarding, every `/seller
   - **+ Add option** opens a form: option name, price, in stock, and stock code (SKU, optional).
 - **Images:**
   - thumbnails, with "Main image" marking the primary one and **Remove** on each
-  - an add form: **Image link (https)**, a **Main image** checkbox, and **Add image**
+  - an add form: **Image link**, a **Main image** checkbox, and **Add image**
 - **Product details:** **Product name**, **Description**, **Status** (Active, Draft, Archived), then **Save**.
-- **Delete product** (danger) asks for confirmation: "Delete this product? This cannot be undone."
+- **Delete product** (danger) is a disclosure: opening it shows what deleting does and the real delete button, so the confirmation works without JS.
 - Every action shows a "Saved." notice or a specific error.
 - This is the densest screen. A designer may split it into sections or tabs, as long as each action still works as a separate form submit.
 
 **Orders `/seller/orders`** [seller-06-orders-empty, seller-06-orders]
 
-- Note: "You are paid when the buyer confirms delivery."
+- Note: "You're paid only when the buyer confirms delivery."
+- "2 orders need you", from the dashboard's count of orders waiting for the seller, when above 0.
 - A list showing "#id", the date and time, the total and a status badge. Rows the seller must act on (`paid`, `processing`) are highlighted.
-- 20 per page. Empty state: "No orders yet. Share your product links to get started."
+- 20 per page. Empty state: "No orders yet", with a **Share a product** link.
+- The design shows the buyer and items on each row, but the orders list doesn't return them yet (a backend change), so rows show the ID, date, total and status.
 
 **Order detail (seller) `/seller/orders/[id]`** [seller-07-order-paid, seller-08-order-processing, seller-09-order-shipped]
 
@@ -358,7 +362,7 @@ All seller pages need login. Until the user completes onboarding, every `/seller
     - **Carrier**, suggestions: Ethio Post, Deliver Addis, Zmall, Self delivery
     - **Tracking number**
     - **Estimated delivery**: a date, today or later
-  - `paid` or `processing`: **Cancel and refund buyer** (danger). It asks for confirmation: "Cancel this order? The buyer is refunded in full."
+  - `paid` or `processing`: **Cancel and refund buyer** (danger), a disclosure that explains the refund and holds the real button.
   - `disputed`: a warning, "Dispute open: <reason>. The buyer opened a dispute. Gebeya will contact you."
   - `shipped`: waiting for the buyer; nothing to do
 
@@ -366,9 +370,9 @@ All seller pages need login. Until the user completes onboarding, every `/seller
 
 - Two figures: **Available to withdraw** and **Held for payouts**.
 - **Withdraw money:**
-  - if the shop or ID isn't verified, only an info note shows: "Payouts need a verified shop and a verified ID (KYC)."
+  - if the shop or ID isn't verified, only an info note shows: "Payouts open after verification. We need to verify your shop and your ID first."
   - otherwise a form:
-    - **Amount (ETB)**, hint "The minimum payout is 1.00 ETB."
+    - **Amount (ETB)**, hint "Minimum 1.00 ETB · up to 1,525.00 ETB"
     - **Send to**: Telebirr, CBE Birr or Bank transfer
     - **Bank or wallet**: the bank and wallet list from Chapa, preselected to match the method
     - **Account or phone number**

@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { enhance } from '$app/forms';
+	import Alert from '#lib/components/Alert.svelte';
 	import FormMessage from '#lib/components/FormMessage.svelte';
+	import Gallery from '#lib/components/Gallery.svelte';
+	import Icon from '#lib/components/Icon.svelte';
+	import Quantity from '#lib/components/Quantity.svelte';
+	import Submit from '#lib/components/Submit.svelte';
+	import Trust from '#lib/components/Trust.svelte';
 	import { formState, submitting } from '#lib/forms.svelte.js';
 	import { lang, t } from '#lib/i18n/index.js';
 	import { formatMoney } from '#lib/money.js';
@@ -15,11 +21,12 @@
 	const shop = $derived(data.detail.shop);
 	const variants = $derived((data.detail.variants ?? []).filter((v) => v.is_active));
 	const images = $derived(
-		[...(data.detail.images ?? [])].sort((a, b) => Number(b.is_primary) - Number(a.is_primary))
+		[...(data.detail.images ?? [])].sort(
+			(a, b) => Number(b.is_primary) - Number(a.is_primary) || a.sort_order - b.sort_order
+		)
 	);
 
 	let selectedId = $state('');
-	let quantity = $state(1);
 	const selected = $derived(
 		variants.find((v) => v.id === selectedId) ??
 			variants.find((v) => (v.available_quantity ?? 0) > 0) ??
@@ -27,213 +34,207 @@
 	);
 	const available = $derived(selected?.available_quantity ?? 0);
 	const amount = (cents: number) => formatMoney(cents, lang());
+	const shopHref = $derived(shop ? resolve('/s/[shop]', { shop: shop.shop_slug }) : undefined);
 </script>
 
 <svelte:head>
-	<title>{product.name} · Gebeya</title>
+	<title>{product.name} · {t('brand.name')}</title>
 	<meta property="og:title" content={product.name} />
 	{#if selected}<meta property="og:description" content={amount(selected.price_cents)} />{/if}
 	{#if images[0]}<meta property="og:image" content={images[0].url} />{/if}
 </svelte:head>
 
-<article class="stack">
-	{#if images.length}
-		<div class="gallery" class:single={images.length === 1}>
-			{#each images as image, i (image.id)}
-				<img
-					src={image.url}
-					alt={image.alt_text ?? product.name}
-					loading={i === 0 ? 'eager' : 'lazy'}
-				/>
-			{/each}
-		</div>
-	{/if}
+<div class="vstack gap-48">
+	<div class="split">
+		<Gallery {images} name={product.name} />
 
-	<header class="stack-sm">
-		<h1>{product.name}</h1>
-		{#if selected}
-			<p class="price">
-				<span class="amount">{amount(selected.price_cents)}</span>
-				{#if selected.compare_price_cents && selected.compare_price_cents > selected.price_cents}
-					<s class="muted">{amount(selected.compare_price_cents)}</s>
+		<div class="vstack gap-24">
+			{#if f.notice === 'product.added'}
+				<Alert tone="success" title={t('product.added')}>
+					<span><a href={resolve('/cart')}>{t('product.viewCart')}</a></span>
+				</Alert>
+			{:else}
+				<FormMessage form={f} />
+			{/if}
+
+			<div class="vstack gap-8">
+				{#if shop}
+					<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- built with resolve() above -->
+					<a class="shop-link" href={shopHref}>
+						{shop.shop_name}
+						{#if shop.is_verified}
+							<span class="verified"
+								><Icon name="check-circle" size={16} />{t('product.verifiedShort')}</span
+							>
+						{/if}
+					</a>
 				{/if}
-			</p>
-		{/if}
-	</header>
-
-	{#if product.description}
-		<p class="description">{product.description}</p>
-	{/if}
-
-	<FormMessage form={f} />
-
-	{#if variants.length === 0}
-		<p class="card muted">{t('product.noVariants')}</p>
-	{:else}
-		<form method="POST" action="?/buy" class="card stack" use:enhance={s.submit}>
-			{#if variants.length > 1}
-				<fieldset class="stack-sm">
-					<legend class="label">{t('product.option')}</legend>
-					<div class="options">
-						{#each variants as v (v.id)}
-							<label class="option" class:active={selected?.id === v.id}>
-								<input
-									type="radio"
-									name="variant_id"
-									value={v.id}
-									checked={selected?.id === v.id}
-									disabled={(v.available_quantity ?? 0) === 0}
-									onchange={() => (selectedId = v.id)}
-								/>
-								<span>{v.title}</span>
-								<span class="muted small">{amount(v.price_cents)}</span>
-							</label>
-						{/each}
+				<h1 class="t1">{product.name}</h1>
+				{#if selected}
+					<div class="prices">
+						<span class="price">{amount(selected.price_cents)}</span>
+						{#if selected.compare_price_cents && selected.compare_price_cents > selected.price_cents}
+							<span class="was"
+								><span class="sr">{t('product.was')} </span>{amount(
+									selected.compare_price_cents
+								)}</span
+							>
+						{/if}
 					</div>
-				</fieldset>
-			{:else}
-				<input type="hidden" name="variant_id" value={selected?.id} />
-			{/if}
-
-			{#if available > 0}
-				<div class="spread">
-					<label class="label" for="quantity">{t('product.quantity')}</label>
-					<div class="row">
-						<input
-							id="quantity"
-							name="quantity"
-							type="number"
-							min="1"
-							max={Math.min(available, 100)}
-							bind:value={quantity}
-							class="qty"
-						/>
-						{#if available <= 5}<span class="muted small"
-								>{t('product.left', { n: available })}</span
-							>{/if}
-					</div>
-				</div>
-				<button class="btn primary block" disabled={s.busy}>{t('product.buyNow')}</button>
-				<button class="btn block" formaction="?/add" disabled={s.busy}
-					>{t('product.addToCart')}</button
-				>
-			{:else}
-				<p class="muted">{t('product.outOfStock')}</p>
-			{/if}
-		</form>
-	{/if}
-
-	{#if shop}
-		<section class="card stack-sm">
-			<div class="spread">
-				<div>
-					<p class="muted small">{t('product.soldBy')}</p>
-					<a href={resolve('/s/[shop]', { shop: shop.shop_slug })} class="shop-name"
-						>{shop.shop_name}</a
-					>
-				</div>
-				{#if shop.is_verified}<span class="verified">✓ {t('product.verified')}</span>{/if}
+				{/if}
 			</div>
-			<dl class="kv">
-				<dt>{t('product.delivery')}</dt>
-				<dd>{amount(shop.delivery_fee_cents)}</dd>
-			</dl>
-			{#if shop.free_delivery_threshold_cents != null}
-				<p class="muted small">
-					{t('product.freeOver', { amount: amount(shop.free_delivery_threshold_cents) })}
-				</p>
+
+			{#if variants.length === 0}
+				<Alert tone="neutral" title={t('product.noVariants')}>
+					{#if shop}
+						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- built with resolve() above -->
+						<span><a href={shopHref}>{t('product.moreFrom', { shop: shop.shop_name })}</a></span>
+					{/if}
+				</Alert>
+			{:else}
+				<form method="POST" action="?/buy" class="vstack gap-24" use:enhance={s.submit}>
+					{#if variants.length > 1}
+						<fieldset class="field">
+							<legend class="label">{t('product.option')}</legend>
+							<div class="opts">
+								{#each variants as v (v.id)}
+									{@const out = (v.available_quantity ?? 0) === 0}
+									<label class="ochip" class:is-off={out}>
+										<input
+											type="radio"
+											name="variant_id"
+											value={v.id}
+											checked={selected?.id === v.id}
+											disabled={out}
+											onchange={() => (selectedId = v.id)}
+										/>
+										<span class="o-t">{v.title}</span>
+										<span class="o-p">{out ? t('product.outOfStock') : amount(v.price_cents)}</span>
+									</label>
+								{/each}
+							</div>
+						</fieldset>
+					{:else}
+						<input type="hidden" name="variant_id" value={selected?.id} />
+					{/if}
+
+					{#if available > 0}
+						<div class="field">
+							<label class="label" for="quantity">{t('product.quantity')}</label>
+							<div class="hstack gap-14">
+								<Quantity id="quantity" max={Math.min(available, 100)} />
+								{#if available <= 5}
+									<span class="foot low">{t('product.left', { n: available })}</span>
+								{/if}
+							</div>
+						</div>
+						<div class="actions stack">
+							<Submit busy={s.busy} class="btn-primary btn-block">{t('product.buyNow')}</Submit>
+							<Submit busy={s.busy} class="btn-secondary btn-block" formaction="?/add"
+								>{t('product.addToCart')}</Submit
+							>
+						</div>
+					{:else}
+						<p class="stock-out">{t('product.outOfStock')}</p>
+					{/if}
+				</form>
+			{/if}
+
+			<Trust title={t('product.protection')} text={t('product.protectionBody')}>
+				<span class="foot faint pay-with">{t('product.payWith')}</span>
+			</Trust>
+		</div>
+	</div>
+
+	<div class="split">
+		<section class="vstack gap-12" aria-labelledby="about-h">
+			<h2 class="t3" id="about-h">{t('product.description')}</h2>
+			{#if product.description}
+				<p class="body muted pretty description">{product.description}</p>
+			{:else}
+				<p class="body faint">{t('product.noDescription')}</p>
 			{/if}
 		</section>
-	{/if}
 
-	<aside class="protection stack-sm">
-		<h2>🛡 {t('product.protection')}</h2>
-		<p>{t('product.protectionBody')}</p>
-	</aside>
-</article>
+		{#if shop}
+			<section class="card" aria-labelledby="seller-h">
+				<div class="hstack gap-14 seller">
+					<span class="avatar" aria-hidden="true">{shop.shop_name.slice(0, 1).toUpperCase()}</span>
+					<div class="vstack">
+						<span class="foot muted">{t('product.soldBy')}</span>
+						<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- built with resolve() above -->
+						<h2 class="t3" id="seller-h"><a class="ink" href={shopHref}>{shop.shop_name}</a></h2>
+					</div>
+				</div>
+				<div class="hstack facts">
+					{#if shop.is_verified}
+						<span class="verified"
+							><Icon name="check-circle" size={16} />{t('product.verified')}</span
+						>
+					{/if}
+					{#if shop.city}
+						<span class="foot muted hstack gap-4"><Icon name="pin" size={16} />{shop.city}</span>
+					{/if}
+				</div>
+				<div class="mrows">
+					<div class="mrow">
+						<span>{t('product.delivery')}</span><span>{amount(shop.delivery_fee_cents)}</span>
+					</div>
+					{#if shop.free_delivery_threshold_cents != null}
+						<div class="mrow">
+							<span>{t('product.freeOverLabel')}</span><span
+								>{amount(shop.free_delivery_threshold_cents)}</span
+							>
+						</div>
+					{/if}
+				</div>
+				<!-- eslint-disable-next-line svelte/no-navigation-without-resolve -- built with resolve() above -->
+				<a class="btn btn-secondary btn-block" href={shopHref}>{t('seller.nav.viewShop')}</a>
+			</section>
+		{/if}
+	</div>
+</div>
 
 <style>
-	.gallery {
-		display: grid;
-		grid-auto-flow: column;
-		grid-auto-columns: 85%;
+	.shop-link {
+		display: inline-flex;
+		align-items: center;
 		gap: 8px;
-		overflow-x: auto;
-		scroll-snap-type: x mandatory;
-		border-radius: var(--radius);
+		align-self: flex-start;
+		min-height: 32px;
+		color: var(--ink-2);
+		font-size: 14px;
+		font-weight: 500;
 	}
-	.gallery.single {
-		grid-auto-columns: 100%;
-	}
-	.gallery img {
-		width: 100%;
-		aspect-ratio: 1;
-		object-fit: cover;
-		border-radius: var(--radius);
-		scroll-snap-align: start;
-		background: var(--surface-2);
-	}
-	.price {
-		font-size: 1.35rem;
+	.prices {
 		display: flex;
-		gap: 10px;
 		align-items: baseline;
+		flex-wrap: wrap;
+		gap: 4px 12px;
+	}
+	.field legend {
+		margin-bottom: 8px;
+	}
+	.low {
+		color: var(--warning-fg);
+		font-weight: 600;
+	}
+	.pay-with {
+		padding-top: 6px;
 	}
 	.description {
 		white-space: pre-line;
 	}
-	fieldset {
-		border: 0;
-		padding: 0;
-		margin: 0;
+	.seller {
+		flex-wrap: nowrap;
 	}
-	.options {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
+	.seller .vstack {
+		gap: 0;
 	}
-	.option {
-		position: relative;
-		display: flex;
-		flex-direction: column;
-		padding: 8px 12px;
-		border: 1px solid var(--border);
-		border-radius: var(--radius-sm);
-		cursor: pointer;
+	.facts {
+		gap: 6px 16px;
 	}
-	.option input {
-		position: absolute;
-		opacity: 0;
-	}
-	.option.active {
-		border-color: var(--accent);
-		box-shadow: inset 0 0 0 1px var(--accent);
-	}
-	.option:has(input:disabled) {
-		opacity: 0.5;
-		cursor: not-allowed;
-	}
-	.option:has(input:focus-visible) {
-		outline: 3px solid color-mix(in srgb, var(--accent) 55%, transparent);
-	}
-	.qty {
-		width: 5.5rem;
-	}
-	.shop-name {
-		font-weight: 700;
-		font-size: 1.05rem;
-	}
-	.verified {
-		color: var(--success-ink);
-		font-weight: 600;
-		font-size: 0.9rem;
-	}
-	.protection {
-		background: var(--accent-soft);
-		border-radius: var(--radius);
-		padding: 16px;
-	}
-	.protection h2 {
-		font-size: 1rem;
+	.ink {
+		color: var(--ink);
 	}
 </style>

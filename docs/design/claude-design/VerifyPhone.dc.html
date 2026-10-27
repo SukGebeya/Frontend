@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Verify phone</title>
+<script src="./support.js"></script>
+<link rel="stylesheet" href="./gebeya.css">
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Noto+Sans+Ethiopic:wght@400;500;600;700&amp;display=swap">
+<style>body{margin:0}</style>
+</helmet>
+<div class="g page {{theme}}" lang="en">
+  <div class="slot"><dc-import name="Header" user="buyer" cart="1" theme="{{theme}}" hint-size="100%,61px"></dc-import></div>
+
+  <main class="main">
+    <div class="wrap">
+      <div class="narrow" style="display: flex; flex-direction: column; gap: 28px; padding-top: 24px">
+        <div style="display: flex; flex-direction: column; align-items: center; text-align: center; gap: 14px">
+          <span class="trust-i" style="width: 56px; height: 56px" aria-hidden="true"><svg class="i" width="26" height="26" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="3"></rect><path d="M10.5 18.5h3"></path></svg></span>
+          <h1 class="t1">Verify your phone</h1>
+          <p class="body muted pretty">You need a verified phone to pay or to open a shop.</p>
+        </div>
+
+        <sc-if value="{{notSent}}" hint-placeholder-val="{{false}}">
+          <p class="callout pretty" style="text-align: center">We’ll text a 6-digit code to <span class="num" style="font-weight: 600">0911 234 567</span>.</p>
+        </sc-if>
+        <sc-if value="{{sentNotice}}" hint-placeholder-val="{{true}}">
+          <div class="alert alert-success" role="status">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="m8.5 12.2 2.3 2.3 4.7-4.8"></path></svg>
+            <div class="alert-b"><span>We sent a code to <strong class="num">0911 234 567</strong>.</span></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{notSent}}" hint-placeholder-val="{{false}}">
+          <form method="post" action="#send" style="display: flex"><button class="btn btn-primary btn-block" type="submit">Send code</button></form>
+        </sc-if>
+
+        <sc-if value="{{expired}}" hint-placeholder-val="{{false}}">
+          <div class="alert alert-warning" role="alert">
+            <svg class="i" width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg>
+            <div class="alert-b"><strong>That code expired</strong><span>Codes last 5 minutes. Send a new one.</span></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{codeStep}}" hint-placeholder-val="{{true}}">
+          <form class="form" method="post" action="#verify">
+            <div class="{{codeCls}}">
+              <label class="label" for="v-code">Code</label>
+              <input class="input otp" id="v-code" name="code" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" value="{{code}}" aria-describedby="v-code-h" aria-invalid="{{wrong}}" required="required">
+              <sc-if value="{{wrong}}" hint-placeholder-val="{{false}}">
+                <p class="err" id="v-code-h"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 7.5v5M12 16v.5"></path></svg>That code isn’t right. Check the SMS and try again.</p>
+              </sc-if>
+              <sc-if value="{{okHint}}" hint-placeholder-val="{{true}}">
+                <p class="hint" id="v-code-h">Expires in 5 minutes.</p>
+              </sc-if>
+            </div>
+            <button class="btn btn-primary btn-block" type="submit">Verify</button>
+          </form>
+          <form method="post" action="#resend" style="display: flex">
+            <button class="btn btn-secondary btn-block" type="submit">Send a new code</button>
+          </form>
+        </sc-if>
+      </div>
+    </div>
+  </main>
+
+  <div class="slot"><dc-import name="Footer" theme="{{theme}}" hint-size="100%,140px"></dc-import></div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"theme":{"editor":"enum","options":["light","dark"],"default":"light"},"state":{"editor":"enum","options":["not sent","sent","wrong code","expired"],"default":"sent"},"$preview":{"width":360,"height":900}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const s = this.props.state ?? 'sent';
+    const wrong = s === 'wrong code';
+    return {
+      theme: this.props.theme ?? 'light',
+      notSent: s === 'not sent',
+      codeStep: s !== 'not sent',
+      sentNotice: s === 'sent',
+      expired: s === 'expired',
+      wrong: wrong,
+      okHint: !wrong,
+      code: wrong ? '482915' : '',
+      codeCls: 'field' + (wrong ? ' is-invalid' : '')
+    };
+  }
+}
+</script>
+</body>
+</html>
